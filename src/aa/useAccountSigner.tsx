@@ -9,14 +9,6 @@ import { Chain, Hex } from "viem";
 import { MultiOwnerSmartContractAccount } from "./account-abstraction/MultiOwnerSmartContractAccount.tsx";
 import { useEffect, useState } from "react";
 
-const ENTRYPOINT_ADDRESS = "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789";
-// const ENTRYPOINT_ADDRESS = '0x0F46c65C17AA6b4102046935F33301f0510B163A'
-
-const MULTI_OWNER_SMART_ACCOUNT_FACTORY_ADDRESS =
-  "0x982aD0e19583BFac7c45A49721354D60F72d0B9f";
-// const SIMPLE_ACCOUNT_FACTORY_ADDRESS = '0x9211bad5c19650a95b2dec3a5339621db2edf9b3'
-// const SIMPLE_ACCOUNT_FACTORY_ADDRESS = '0x8d4A2cAf0c05DDA674720DD40D6Bf31BeC70514D'
-// const SIMPLE_ACCOUNT_FACTORY_ADDRESS = '0x9406Cc6185a346906296840746125a0E44976454'
 export function useAccountSigner({
   chainId,
   externalAccountAddress,
