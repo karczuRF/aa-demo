@@ -1,86 +1,72 @@
-import { usePublicEthersProvider } from "./usePublicEthersProvider.tsx";
-import { getChain } from "@alchemy/aa-core";
+import { usePublicEthersProvider } from "./usePublicEthersProvider"
+import { getChain } from "@alchemy/aa-core"
 // import { withAlchemyGasFeeEstimator } from "@alchemy/aa-alchemy";
-import { AccountSigner, EthersProviderAdapter } from "@alchemy/aa-ethers";
-import { ethers, providers } from "ethers";
-import { useAccountOwner } from "./useAccountOwner.tsx";
-import { Chain, Hex } from "viem";
+import { AccountSigner, EthersProviderAdapter } from "@alchemy/aa-ethers"
+import { providers } from "ethers"
+import { useAccountOwner } from "./useAccountOwner.tsx"
+import { Chain, Hex } from "viem"
 // import {WHITELIST_PAYMASTER} from "./constants.ts";
-import { MultiOwnerSmartContractAccount } from "./account-abstraction/MultiOwnerSmartContractAccount.tsx";
-import { useEffect, useState } from "react";
+import { MultiSigAccountAbstraction } from "../account-abstraction/MultiSigAccountAbstraction.tsx"
+import { useEffect, useState } from "react"
+import { ENTRYPOINT_ADDRESS, MUSIG_ACCOUNT_FACTORY_ADDRESS } from "../../utils/const.ts"
 
 export function useAccountSigner({
   chainId,
   externalAccountAddress,
 }: {
-  chainId: Chain["id"];
-  externalAccountAddress?: Hex;
+  chainId: Chain["id"]
+  externalAccountAddress?: Hex
 }) {
-  const [accountSigner, setAccountSigner] = useState<
-    AccountSigner | undefined
-  >();
-  const owner = useAccountOwner({ chainId });
-  const publicProvider = usePublicEthersProvider({ chainId });
+  const [accountSigner, setAccountSigner] = useState<AccountSigner | undefined>()
+  const owner = useAccountOwner({ chainId })
+  const publicProvider = usePublicEthersProvider({ chainId })
 
-  console.log(
-    "[useAccountSigner] externalAccountAddress",
-    externalAccountAddress
-  );
+  console.log("[useAccountSigner] externalAccountAddress", externalAccountAddress)
   useEffect(() => {
     async function getAccountSigner() {
       if (publicProvider instanceof providers.JsonRpcProvider && owner) {
-        const accountProvider = EthersProviderAdapter.fromEthersProvider(
-          publicProvider,
-          ENTRYPOINT_ADDRESS
-        );
+        const accountProvider = EthersProviderAdapter.fromEthersProvider(publicProvider)
         //     .withPaymasterMiddleware({
         //     dummyPaymasterDataMiddleware: async () => { return { paymasterAndData: WHITELIST_PAYMASTER } },
         //     paymasterDataMiddleware: async () => { return { paymasterAndData: WHITELIST_PAYMASTER } },
         // })
 
         const accountSigner = accountProvider.connectToAccount((rpcClient) => {
-          const smartAccount = new MultiOwnerSmartContractAccount({
+          const smartAccount = new MultiSigAccountAbstraction({
             entryPointAddress: ENTRYPOINT_ADDRESS,
             chain: getChain(publicProvider.network.chainId),
             owner,
-            factoryAddress: MULTI_OWNER_SMART_ACCOUNT_FACTORY_ADDRESS,
+            factoryAddress: MUSIG_ACCOUNT_FACTORY_ADDRESS,
             rpcClient,
             accountAddress: externalAccountAddress,
-          });
+          })
 
-          smartAccount.getDeploymentState().then((result) => {
-            console.log("[useAccountSigner] deployment state", result);
-          });
-          smartAccount.isAccountDeployed().then((deployed) => {
-            console.log("[useAccountSigner] deployed", deployed);
-          });
+          smartAccount.getDeploymentState().then((result: unknown) => {
+            console.log("[useAccountSigner] deployment state", result)
+          })
+          smartAccount.isAccountDeployed().then((deployed: unknown) => {
+            console.log("[useAccountSigner] deployed", deployed)
+          })
 
-          return smartAccount;
-        });
-        accountSigner.withCustomMiddleware(async (userOperation) => {
-          console.log("[custom middleware]");
-          console.log("[custom middleware]", await userOperation.nonce);
-          console.log(
-            "[custom middleware]",
-            ethers.utils.parseUnits("200", "gwei")
-          );
+          return smartAccount
+        })
+        // accountSigner.withCustomMiddleware(async (userOperation) => {
+        //   console.log("[custom middleware]")
+        //   console.log("[custom middleware]", await userOperation.nonce)
+        //   console.log("[custom middleware]", ethers.utils.parseUnits("200", "gwei"))
 
-          return Promise.resolve({
-            ...userOperation,
-            maxFeePerGas: Promise.resolve(
-              ethers.utils.parseUnits("200", "gwei").toHexString()
-            ),
-            maxPriorityFeePerGas: Promise.resolve(
-              ethers.utils.parseUnits("200", "gwei").toHexString()
-            ),
-          });
-        });
-        setAccountSigner(accountSigner);
+        //   return Promise.resolve({
+        //     ...userOperation,
+        //     maxFeePerGas: Promise.resolve(ethers.utils.parseUnits("200", "gwei").toHexString()),
+        //     maxPriorityFeePerGas: Promise.resolve(ethers.utils.parseUnits("200", "gwei").toHexString()),
+        //   })
+        // })
+        setAccountSigner(accountSigner)
       }
     }
-    getAccountSigner();
-  }, [publicProvider, owner, chainId, externalAccountAddress]);
+    getAccountSigner()
+  }, [publicProvider, owner, chainId, externalAccountAddress])
 
-  console.log("[useAccountSigner] accountSigner", accountSigner);
-  return accountSigner;
+  console.log("[useAccountSigner] accountSigner", accountSigner)
+  return accountSigner
 }

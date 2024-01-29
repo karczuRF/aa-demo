@@ -13,11 +13,12 @@
     "@alchemy/aa-accounts": "^2.3.1",
     "@alchemy/aa-alchemy": "^2.3.1",
     "@alchemy/aa-core": "^2.3.1",
-    "ethers": "^6.10.0",
+    "@alchemy/aa-ethers": "^2.3.1",
+    "ethers": "^5.7.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "viem": "^2.5.0",
-    "wagmi": "^2.5.2"
+    "viem": "^1.21.4",
+    "wagmi": "^1.4.2"
   },
   "devDependencies": {
     "@types/node": "^20.11.7",

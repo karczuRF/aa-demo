@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useWalletClient } from "wagmi";
-import { ethers } from "ethers";
+import { providers } from "ethers";
 import { WalletClient } from "viem";
 
 export function walletClientToSigner(walletClient: WalletClient) {
@@ -14,7 +14,7 @@ export function walletClientToSigner(walletClient: WalletClient) {
     name: chain.name,
     ensAddress: chain.contracts?.ensRegistry?.address,
   };
-  const provider = new ethers.BrowserProvider(transport, network);
+  const provider = new providers.Web3Provider(transport, network);
 
   console.log("useEthersSigner provider", provider);
 
