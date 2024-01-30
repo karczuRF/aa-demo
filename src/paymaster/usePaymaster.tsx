@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react"
 import { useEthersSigner } from "../aa/useEthersSigner.tsx"
 import { ConnectionParams } from "../account-abstraction/MultiSigAccountAbstraction.types.ts"
-import { typechain } from "../aams-contracts/index.ts"
+import { WhitelistPaymaster, WhitelistPaymaster__factory } from "aams-test/src/typechain/index.ts"
 
 export function usePaymaster({ paymasterAddress, chainId }: { paymasterAddress: string } & ConnectionParams) {
-  const [paymaster, setPaymaster] = useState<typechain.WhitelistPaymaster>()
+  const [paymaster, setPaymaster] = useState<WhitelistPaymaster>()
   const signer = useEthersSigner({ chainId })
 
   useEffect(() => {
     if (signer) {
-      const Paymaster = typechain.WhitelistPaymaster__factory.connect(paymasterAddress, signer)
+      const Paymaster = WhitelistPaymaster__factory.connect(paymasterAddress)
       setPaymaster(Paymaster)
     }
   }, [signer])

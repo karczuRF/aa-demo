@@ -14,23 +14,30 @@
     "@alchemy/aa-alchemy": "^2.3.1",
     "@alchemy/aa-core": "^2.3.1",
     "@alchemy/aa-ethers": "^2.3.1",
-    "ethers": "^5.7.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "viem": "^1.21.4",
     "wagmi": "^1.4.2"
   },
   "devDependencies": {
+    "@types/ecurve": "^1.0.0",
+    "@types/elliptic": "^6.4.14",
     "@types/node": "^20.11.7",
     "@types/react": "^18.2.43",
     "@types/react-dom": "^18.2.17",
+    "@types/secp256k1": "^4.0.3",
     "@typescript-eslint/eslint-plugin": "^6.14.0",
     "@typescript-eslint/parser": "^6.14.0",
     "@vitejs/plugin-react": "^4.2.1",
+    "bigi": "^1.4.2",
     "eslint": "^8.55.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "typescript": "^5.3.3",
-    "vite": "^5.0.8"
+    "vite": "^5.0.8",
+    "ecurve": "^1.0.6",
+    "ethers": "^5.7.2",
+    "secp256k1": "^5.0.0",
+    "aams-test": "file:../../aams-test/dist/"
   }
 }

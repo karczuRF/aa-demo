@@ -3,7 +3,7 @@ import { concatHex, encodeFunctionData, hexToBytes, type Hex, FallbackTransport,
 
 import { BaseSmartContractAccount, BatchUserOperationCallData, SmartAccountSigner } from "@alchemy/aa-core"
 
-import { abi } from "../aams-contracts"
+import { MultiSigSmartAccountFactory_abi, MultiSigSmartAccount_abi } from "aams-test/src/abi/"
 import { MultiSigAccountAbstractionParams, MultiSigAccountAbstractionParamsSchema } from "./schema"
 
 export class MultiSigAccountAbstraction<
@@ -28,7 +28,7 @@ export class MultiSigAccountAbstraction<
 
   async encodeExecute(target: Hex, value: bigint, data: Hex): Promise<`0x${string}`> {
     return encodeFunctionData({
-      abi: abi.MultiSigSmartAccount_abi,
+      abi: MultiSigSmartAccount_abi,
       functionName: "execute",
       args: [target, value, data],
     })
@@ -46,7 +46,7 @@ export class MultiSigAccountAbstraction<
     )
 
     return encodeFunctionData({
-      abi: abi.MultiSigSmartAccount_abi,
+      abi: MultiSigSmartAccount_abi,
       functionName: "executeBatch",
       args: [targets, datas],
     })
@@ -66,7 +66,7 @@ export class MultiSigAccountAbstraction<
     return concatHex([
       this.factoryAddress,
       encodeFunctionData({
-        abi: abi.MultiSigSmartAccountFactory_abi,
+        abi: MultiSigSmartAccountFactory_abi,
         functionName: "createAccount",
         args: [await this.owner.getAddress(), this.index],
       }),
