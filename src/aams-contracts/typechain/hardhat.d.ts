@@ -46,6 +46,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC721Errors__factory>;
     getContractFactory(
+      name: "IERC1271",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC1271__factory>;
+    getContractFactory(
       name: "IBeacon",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IBeacon__factory>;
@@ -130,9 +134,21 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.AlchemyBaseAccount__factory>;
     getContractFactory(
+      name: "EntryPoint",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.EntryPoint__factory>;
+    getContractFactory(
       name: "BasePaymaster",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.BasePaymaster__factory>;
+    getContractFactory(
+      name: "NonceManager",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.NonceManager__factory>;
+    getContractFactory(
+      name: "SenderCreator",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.SenderCreator__factory>;
     getContractFactory(
       name: "StakeManager",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -146,6 +162,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IAlchemyAccount__factory>;
     getContractFactory(
+      name: "IAlchemyEntryPoint",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IAlchemyEntryPoint__factory>;
+    getContractFactory(
       name: "IAlchemyNonceManager",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IAlchemyNonceManager__factory>;
@@ -153,10 +173,6 @@ declare module "hardhat/types/runtime" {
       name: "IAlchemyAccount",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IAlchemyAccount__factory>;
-    getContractFactory(
-      name: "IEntryPoint",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IEntryPoint__factory>;
     getContractFactory(
       name: "IPaymaster",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -251,6 +267,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IERC721Errors>;
     getContractAt(
+      name: "IERC1271",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC1271>;
+    getContractAt(
       name: "IBeacon",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -356,10 +377,25 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.AlchemyBaseAccount>;
     getContractAt(
+      name: "EntryPoint",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.EntryPoint>;
+    getContractAt(
       name: "BasePaymaster",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.BasePaymaster>;
+    getContractAt(
+      name: "NonceManager",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.NonceManager>;
+    getContractAt(
+      name: "SenderCreator",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.SenderCreator>;
     getContractAt(
       name: "StakeManager",
       address: string | ethers.Addressable,
@@ -376,6 +412,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IAlchemyAccount>;
     getContractAt(
+      name: "IAlchemyEntryPoint",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IAlchemyEntryPoint>;
+    getContractAt(
       name: "IAlchemyNonceManager",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -385,11 +426,6 @@ declare module "hardhat/types/runtime" {
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.IAlchemyAccount>;
-    getContractAt(
-      name: "IEntryPoint",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IEntryPoint>;
     getContractAt(
       name: "IPaymaster",
       address: string | ethers.Addressable,
@@ -489,6 +525,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IERC721Errors>;
     deployContract(
+      name: "IERC1271",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IERC1271>;
+    deployContract(
       name: "IBeacon",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IBeacon>;
@@ -573,9 +613,21 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.AlchemyBaseAccount>;
     deployContract(
+      name: "EntryPoint",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.EntryPoint>;
+    deployContract(
       name: "BasePaymaster",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.BasePaymaster>;
+    deployContract(
+      name: "NonceManager",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.NonceManager>;
+    deployContract(
+      name: "SenderCreator",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.SenderCreator>;
     deployContract(
       name: "StakeManager",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -589,6 +641,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IAlchemyAccount>;
     deployContract(
+      name: "IAlchemyEntryPoint",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IAlchemyEntryPoint>;
+    deployContract(
       name: "IAlchemyNonceManager",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IAlchemyNonceManager>;
@@ -596,10 +652,6 @@ declare module "hardhat/types/runtime" {
       name: "IAlchemyAccount",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IAlchemyAccount>;
-    deployContract(
-      name: "IEntryPoint",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IEntryPoint>;
     deployContract(
       name: "IPaymaster",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -694,6 +746,11 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IERC721Errors>;
     deployContract(
+      name: "IERC1271",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IERC1271>;
+    deployContract(
       name: "IBeacon",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -799,10 +856,25 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.AlchemyBaseAccount>;
     deployContract(
+      name: "EntryPoint",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.EntryPoint>;
+    deployContract(
       name: "BasePaymaster",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.BasePaymaster>;
+    deployContract(
+      name: "NonceManager",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.NonceManager>;
+    deployContract(
+      name: "SenderCreator",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.SenderCreator>;
     deployContract(
       name: "StakeManager",
       args: any[],
@@ -819,6 +891,11 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IAlchemyAccount>;
     deployContract(
+      name: "IAlchemyEntryPoint",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IAlchemyEntryPoint>;
+    deployContract(
       name: "IAlchemyNonceManager",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -828,11 +905,6 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IAlchemyAccount>;
-    deployContract(
-      name: "IEntryPoint",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.IEntryPoint>;
     deployContract(
       name: "IPaymaster",
       args: any[],

@@ -69,7 +69,7 @@ const _abi = [
             type: "bytes",
           },
         ],
-        internalType: "struct AlchemyUserOperation",
+        internalType: "struct UserOperation",
         name: "userOp",
         type: "tuple",
       },

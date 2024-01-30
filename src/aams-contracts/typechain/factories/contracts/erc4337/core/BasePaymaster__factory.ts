@@ -75,7 +75,7 @@ const _abi = [
     name: "entryPoint",
     outputs: [
       {
-        internalType: "contract IEntryPoint",
+        internalType: "contract IAlchemyEntryPoint",
         name: "",
         type: "address",
       },
@@ -142,7 +142,7 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "contract IEntryPoint",
+        internalType: "contract IAlchemyEntryPoint",
         name: "_entryPoint",
         type: "address",
       },

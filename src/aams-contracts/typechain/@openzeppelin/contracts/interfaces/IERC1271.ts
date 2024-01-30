@@ -3,12 +3,10 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumberish,
   BytesLike,
   FunctionFragment,
   Result,
   Interface,
-  AddressLike,
   ContractRunner,
   ContractMethod,
   Listener,
@@ -19,67 +17,27 @@ import type {
   TypedEventLog,
   TypedListener,
   TypedContractMethod,
-} from "../../../../common";
+} from "../../../common";
 
-export type UserOperationStruct = {
-  sender: AddressLike;
-  nonce: BigNumberish;
-  initCode: BytesLike;
-  callData: BytesLike;
-  callGasLimit: BigNumberish;
-  verificationGasLimit: BigNumberish;
-  preVerificationGas: BigNumberish;
-  maxFeePerGas: BigNumberish;
-  maxPriorityFeePerGas: BigNumberish;
-  paymasterAndData: BytesLike;
-  signature: BytesLike;
-};
-
-export type UserOperationStructOutput = [
-  sender: string,
-  nonce: bigint,
-  initCode: string,
-  callData: string,
-  callGasLimit: bigint,
-  verificationGasLimit: bigint,
-  preVerificationGas: bigint,
-  maxFeePerGas: bigint,
-  maxPriorityFeePerGas: bigint,
-  paymasterAndData: string,
-  signature: string
-] & {
-  sender: string;
-  nonce: bigint;
-  initCode: string;
-  callData: string;
-  callGasLimit: bigint;
-  verificationGasLimit: bigint;
-  preVerificationGas: bigint;
-  maxFeePerGas: bigint;
-  maxPriorityFeePerGas: bigint;
-  paymasterAndData: string;
-  signature: string;
-};
-
-export interface IAlchemyAccountInterface extends Interface {
-  getFunction(nameOrSignature: "validateUserOp"): FunctionFragment;
+export interface IERC1271Interface extends Interface {
+  getFunction(nameOrSignature: "isValidSignature"): FunctionFragment;
 
   encodeFunctionData(
-    functionFragment: "validateUserOp",
-    values: [UserOperationStruct, BytesLike, BigNumberish]
+    functionFragment: "isValidSignature",
+    values: [BytesLike, BytesLike]
   ): string;
 
   decodeFunctionResult(
-    functionFragment: "validateUserOp",
+    functionFragment: "isValidSignature",
     data: BytesLike
   ): Result;
 }
 
-export interface IAlchemyAccount extends BaseContract {
-  connect(runner?: ContractRunner | null): IAlchemyAccount;
+export interface IERC1271 extends BaseContract {
+  connect(runner?: ContractRunner | null): IERC1271;
   waitForDeployment(): Promise<this>;
 
-  interface: IAlchemyAccountInterface;
+  interface: IERC1271Interface;
 
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,
@@ -118,14 +76,10 @@ export interface IAlchemyAccount extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
-  validateUserOp: TypedContractMethod<
-    [
-      userOp: UserOperationStruct,
-      userOpHash: BytesLike,
-      missingAccountFunds: BigNumberish
-    ],
-    [bigint],
-    "nonpayable"
+  isValidSignature: TypedContractMethod<
+    [hash: BytesLike, signature: BytesLike],
+    [string],
+    "view"
   >;
 
   getFunction<T extends ContractMethod = ContractMethod>(
@@ -133,15 +87,11 @@ export interface IAlchemyAccount extends BaseContract {
   ): T;
 
   getFunction(
-    nameOrSignature: "validateUserOp"
+    nameOrSignature: "isValidSignature"
   ): TypedContractMethod<
-    [
-      userOp: UserOperationStruct,
-      userOpHash: BytesLike,
-      missingAccountFunds: BigNumberish
-    ],
-    [bigint],
-    "nonpayable"
+    [hash: BytesLike, signature: BytesLike],
+    [string],
+    "view"
   >;
 
   filters: {};

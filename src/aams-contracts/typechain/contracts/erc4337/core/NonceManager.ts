@@ -21,74 +21,40 @@ import type {
   TypedContractMethod,
 } from "../../../common";
 
-export type UserOperationStruct = {
-  sender: AddressLike;
-  nonce: BigNumberish;
-  initCode: BytesLike;
-  callData: BytesLike;
-  callGasLimit: BigNumberish;
-  verificationGasLimit: BigNumberish;
-  preVerificationGas: BigNumberish;
-  maxFeePerGas: BigNumberish;
-  maxPriorityFeePerGas: BigNumberish;
-  paymasterAndData: BytesLike;
-  signature: BytesLike;
-};
-
-export type UserOperationStructOutput = [
-  sender: string,
-  nonce: bigint,
-  initCode: string,
-  callData: string,
-  callGasLimit: bigint,
-  verificationGasLimit: bigint,
-  preVerificationGas: bigint,
-  maxFeePerGas: bigint,
-  maxPriorityFeePerGas: bigint,
-  paymasterAndData: string,
-  signature: string
-] & {
-  sender: string;
-  nonce: bigint;
-  initCode: string;
-  callData: string;
-  callGasLimit: bigint;
-  verificationGasLimit: bigint;
-  preVerificationGas: bigint;
-  maxFeePerGas: bigint;
-  maxPriorityFeePerGas: bigint;
-  paymasterAndData: string;
-  signature: string;
-};
-
-export interface AlchemyBaseAccountInterface extends Interface {
+export interface NonceManagerInterface extends Interface {
   getFunction(
-    nameOrSignature: "entryPoint" | "getNonce" | "validateUserOp"
+    nameOrSignature: "getNonce" | "incrementNonce" | "nonceSequenceNumber"
   ): FunctionFragment;
 
   encodeFunctionData(
-    functionFragment: "entryPoint",
-    values?: undefined
+    functionFragment: "getNonce",
+    values: [AddressLike, BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "getNonce", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "validateUserOp",
-    values: [UserOperationStruct, BytesLike, BigNumberish]
+    functionFragment: "incrementNonce",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "nonceSequenceNumber",
+    values: [AddressLike, BigNumberish]
   ): string;
 
-  decodeFunctionResult(functionFragment: "entryPoint", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getNonce", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "validateUserOp",
+    functionFragment: "incrementNonce",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "nonceSequenceNumber",
     data: BytesLike
   ): Result;
 }
 
-export interface AlchemyBaseAccount extends BaseContract {
-  connect(runner?: ContractRunner | null): AlchemyBaseAccount;
+export interface NonceManager extends BaseContract {
+  connect(runner?: ContractRunner | null): NonceManager;
   waitForDeployment(): Promise<this>;
 
-  interface: AlchemyBaseAccountInterface;
+  interface: NonceManagerInterface;
 
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,
@@ -127,18 +93,22 @@ export interface AlchemyBaseAccount extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
-  entryPoint: TypedContractMethod<[], [string], "view">;
-
-  getNonce: TypedContractMethod<[], [bigint], "view">;
-
-  validateUserOp: TypedContractMethod<
-    [
-      userOp: UserOperationStruct,
-      userOpHash: BytesLike,
-      missingAccountFunds: BigNumberish
-    ],
+  getNonce: TypedContractMethod<
+    [sender: AddressLike, key: BigNumberish],
     [bigint],
+    "view"
+  >;
+
+  incrementNonce: TypedContractMethod<
+    [key: BigNumberish],
+    [void],
     "nonpayable"
+  >;
+
+  nonceSequenceNumber: TypedContractMethod<
+    [arg0: AddressLike, arg1: BigNumberish],
+    [bigint],
+    "view"
   >;
 
   getFunction<T extends ContractMethod = ContractMethod>(
@@ -146,21 +116,21 @@ export interface AlchemyBaseAccount extends BaseContract {
   ): T;
 
   getFunction(
-    nameOrSignature: "entryPoint"
-  ): TypedContractMethod<[], [string], "view">;
-  getFunction(
     nameOrSignature: "getNonce"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "validateUserOp"
   ): TypedContractMethod<
-    [
-      userOp: UserOperationStruct,
-      userOpHash: BytesLike,
-      missingAccountFunds: BigNumberish
-    ],
+    [sender: AddressLike, key: BigNumberish],
     [bigint],
-    "nonpayable"
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "incrementNonce"
+  ): TypedContractMethod<[key: BigNumberish], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "nonceSequenceNumber"
+  ): TypedContractMethod<
+    [arg0: AddressLike, arg1: BigNumberish],
+    [bigint],
+    "view"
   >;
 
   filters: {};

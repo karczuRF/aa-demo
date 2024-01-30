@@ -3,12 +3,10 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumberish,
   BytesLike,
   FunctionFragment,
   Result,
   Interface,
-  AddressLike,
   ContractRunner,
   ContractMethod,
   Listener,
@@ -19,67 +17,27 @@ import type {
   TypedEventLog,
   TypedListener,
   TypedContractMethod,
-} from "../../../../common";
+} from "../../../common";
 
-export type UserOperationStruct = {
-  sender: AddressLike;
-  nonce: BigNumberish;
-  initCode: BytesLike;
-  callData: BytesLike;
-  callGasLimit: BigNumberish;
-  verificationGasLimit: BigNumberish;
-  preVerificationGas: BigNumberish;
-  maxFeePerGas: BigNumberish;
-  maxPriorityFeePerGas: BigNumberish;
-  paymasterAndData: BytesLike;
-  signature: BytesLike;
-};
-
-export type UserOperationStructOutput = [
-  sender: string,
-  nonce: bigint,
-  initCode: string,
-  callData: string,
-  callGasLimit: bigint,
-  verificationGasLimit: bigint,
-  preVerificationGas: bigint,
-  maxFeePerGas: bigint,
-  maxPriorityFeePerGas: bigint,
-  paymasterAndData: string,
-  signature: string
-] & {
-  sender: string;
-  nonce: bigint;
-  initCode: string;
-  callData: string;
-  callGasLimit: bigint;
-  verificationGasLimit: bigint;
-  preVerificationGas: bigint;
-  maxFeePerGas: bigint;
-  maxPriorityFeePerGas: bigint;
-  paymasterAndData: string;
-  signature: string;
-};
-
-export interface IAlchemyAccountInterface extends Interface {
-  getFunction(nameOrSignature: "validateUserOp"): FunctionFragment;
+export interface SenderCreatorInterface extends Interface {
+  getFunction(nameOrSignature: "createSender"): FunctionFragment;
 
   encodeFunctionData(
-    functionFragment: "validateUserOp",
-    values: [UserOperationStruct, BytesLike, BigNumberish]
+    functionFragment: "createSender",
+    values: [BytesLike]
   ): string;
 
   decodeFunctionResult(
-    functionFragment: "validateUserOp",
+    functionFragment: "createSender",
     data: BytesLike
   ): Result;
 }
 
-export interface IAlchemyAccount extends BaseContract {
-  connect(runner?: ContractRunner | null): IAlchemyAccount;
+export interface SenderCreator extends BaseContract {
+  connect(runner?: ContractRunner | null): SenderCreator;
   waitForDeployment(): Promise<this>;
 
-  interface: IAlchemyAccountInterface;
+  interface: SenderCreatorInterface;
 
   queryFilter<TCEvent extends TypedContractEvent>(
     event: TCEvent,
@@ -118,13 +76,9 @@ export interface IAlchemyAccount extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
-  validateUserOp: TypedContractMethod<
-    [
-      userOp: UserOperationStruct,
-      userOpHash: BytesLike,
-      missingAccountFunds: BigNumberish
-    ],
-    [bigint],
+  createSender: TypedContractMethod<
+    [initCode: BytesLike],
+    [string],
     "nonpayable"
   >;
 
@@ -133,16 +87,8 @@ export interface IAlchemyAccount extends BaseContract {
   ): T;
 
   getFunction(
-    nameOrSignature: "validateUserOp"
-  ): TypedContractMethod<
-    [
-      userOp: UserOperationStruct,
-      userOpHash: BytesLike,
-      missingAccountFunds: BigNumberish
-    ],
-    [bigint],
-    "nonpayable"
-  >;
+    nameOrSignature: "createSender"
+  ): TypedContractMethod<[initCode: BytesLike], [string], "nonpayable">;
 
   filters: {};
 }

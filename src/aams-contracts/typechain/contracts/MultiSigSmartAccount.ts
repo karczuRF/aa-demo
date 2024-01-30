@@ -23,7 +23,7 @@ import type {
   TypedContractMethod,
 } from "../common";
 
-export type AlchemyUserOperationStruct = {
+export type UserOperationStruct = {
   sender: AddressLike;
   nonce: BigNumberish;
   initCode: BytesLike;
@@ -37,7 +37,7 @@ export type AlchemyUserOperationStruct = {
   signature: BytesLike;
 };
 
-export type AlchemyUserOperationStructOutput = [
+export type UserOperationStructOutput = [
   sender: string,
   nonce: bigint,
   initCode: string,
@@ -214,7 +214,7 @@ export interface MultiSigSmartAccountInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "validateUserOp",
-    values: [AlchemyUserOperationStruct, BytesLike, BigNumberish]
+    values: [UserOperationStruct, BytesLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "withdrawDepositTo",
@@ -563,7 +563,7 @@ export interface MultiSigSmartAccount extends BaseContract {
 
   validateUserOp: TypedContractMethod<
     [
-      userOp: AlchemyUserOperationStruct,
+      userOp: UserOperationStruct,
       userOpHash: BytesLike,
       missingAccountFunds: BigNumberish
     ],
@@ -731,7 +731,7 @@ export interface MultiSigSmartAccount extends BaseContract {
     nameOrSignature: "validateUserOp"
   ): TypedContractMethod<
     [
-      userOp: AlchemyUserOperationStruct,
+      userOp: UserOperationStruct,
       userOpHash: BytesLike,
       missingAccountFunds: BigNumberish
     ],

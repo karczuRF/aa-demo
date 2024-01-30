@@ -5,7 +5,7 @@ import type * as iAlchemyUserOperationSol from "./IAlchemyUserOperation.sol";
 export type { iAlchemyUserOperationSol };
 export type { IAggregator } from "./IAggregator";
 export type { IAlchemyAccount } from "./IAlchemyAccount";
+export type { IAlchemyEntryPoint } from "./IAlchemyEntryPoint";
 export type { IAlchemyNonceManager } from "./IAlchemyNonceManager";
-export type { IEntryPoint } from "./IEntryPoint";
 export type { IPaymaster } from "./IPaymaster";
 export type { IStakeManager } from "./IStakeManager";

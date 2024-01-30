@@ -14,7 +14,7 @@ const _abi = [
     name: "entryPoint",
     outputs: [
       {
-        internalType: "contract IEntryPoint",
+        internalType: "contract IAlchemyEntryPoint",
         name: "",
         type: "address",
       },
@@ -95,7 +95,7 @@ const _abi = [
             type: "bytes",
           },
         ],
-        internalType: "struct AlchemyUserOperation",
+        internalType: "struct UserOperation",
         name: "userOp",
         type: "tuple",
       },

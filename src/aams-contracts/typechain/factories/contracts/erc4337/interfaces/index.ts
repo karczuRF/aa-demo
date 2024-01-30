@@ -4,7 +4,7 @@
 export * as iAlchemyUserOperationSol from "./IAlchemyUserOperation.sol";
 export { IAggregator__factory } from "./IAggregator__factory";
 export { IAlchemyAccount__factory } from "./IAlchemyAccount__factory";
+export { IAlchemyEntryPoint__factory } from "./IAlchemyEntryPoint__factory";
 export { IAlchemyNonceManager__factory } from "./IAlchemyNonceManager__factory";
-export { IEntryPoint__factory } from "./IEntryPoint__factory";
 export { IPaymaster__factory } from "./IPaymaster__factory";
 export { IStakeManager__factory } from "./IStakeManager__factory";

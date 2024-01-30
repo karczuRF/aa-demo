@@ -2,7 +2,7 @@
   {
     "inputs": [
       {
-        "internalType": "contract IEntryPoint",
+        "internalType": "contract IAlchemyEntryPoint",
         "name": "_entryPoint",
         "type": "address"
       },
@@ -113,7 +113,7 @@
     "name": "entryPoint",
     "outputs": [
       {
-        "internalType": "contract IEntryPoint",
+        "internalType": "contract IAlchemyEntryPoint",
         "name": "",
         "type": "address"
       }
@@ -256,7 +256,7 @@
   {
     "inputs": [
       {
-        "internalType": "contract IEntryPoint",
+        "internalType": "contract IAlchemyEntryPoint",
         "name": "_entryPoint",
         "type": "address"
       }

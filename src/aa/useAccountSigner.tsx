@@ -1,5 +1,5 @@
 import { usePublicEthersProvider } from "./usePublicEthersProvider"
-import { getChain } from "@alchemy/aa-core"
+import { ISmartContractAccount, getChain } from "@alchemy/aa-core"
 // import { withAlchemyGasFeeEstimator } from "@alchemy/aa-alchemy";
 import { AccountSigner, EthersProviderAdapter } from "@alchemy/aa-ethers"
 import { providers } from "ethers"
@@ -17,7 +17,7 @@ export function useAccountSigner({
   chainId: Chain["id"]
   externalAccountAddress?: Hex
 }) {
-  const [accountSigner, setAccountSigner] = useState<AccountSigner | undefined>()
+  const [accountSigner, setAccountSigner] = useState<AccountSigner<ISmartContractAccount> | undefined>()
   const owner = useAccountOwner({ chainId })
   const publicProvider = usePublicEthersProvider({ chainId })
 
