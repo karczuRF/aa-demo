@@ -10,7 +10,7 @@ export const Transfer: React.FC<ERC20Params> = ({ address, toAddress, ...connect
 
   const handleTransfer = async () => {
     if (erc20) {
-      const amountBN = BigNumber.from(amount).mul(BigNumber.from(10).pow(18))
+      const amountBN = BigNumber.from(amount).mul(BigNumber.from(10).pow(18)).toNumber()
       const transaction = await erc20.transfer(toAddress, amountBN)
 
       const transactionReceipt = await transaction.wait()

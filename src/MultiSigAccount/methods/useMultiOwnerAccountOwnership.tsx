@@ -8,7 +8,8 @@ import { useEOA } from "../../eoa/useEOA.tsx"
 export const useMultiOwnerAccountOwnership = (multiOwnersSmartAccountParams: MultiOwnersSmartAccountParams) => {
   const { externalAccountAddress, chainId } = multiOwnersSmartAccountParams
   const [isOwner, setIsOwner] = useState<boolean>(false)
-  const [accountAddress, setAccountAddress] = useState<string>("")
+  const [isSigner, setIsSigner] = useState<boolean>(false)
+  const [accountSignerAddress, setAccountSignerAddress] = useState<string>("")
 
   const accountSigner = useAccountSigner(multiOwnersSmartAccountParams)
 
@@ -16,37 +17,33 @@ export const useMultiOwnerAccountOwnership = (multiOwnersSmartAccountParams: Mul
 
   const { multiOwnerSmartAccount } = useMultiOwnerSmartAccount(multiOwnersSmartAccountParams)
 
+  console.log("[useMultiOwnerAccountOwnership] multiOwnerSmartAccount params", { multiOwnersSmartAccountParams })
   console.log("[useMultiOwnerAccountOwnership] multiOwnerSmartAccount", multiOwnerSmartAccount)
   console.log("[useMultiOwnerAccountOwnership] accountSigner", accountSigner)
   console.log("[useMultiOwnerAccountOwnership] eoaAddress", eoaAddress)
 
   useEffect(() => {
-    async function checkOwner() {
+    async function checkOwnerSigner() {
       if (multiOwnerSmartAccount && accountSigner) {
         console.log("[useMultiOwnerAccountOwnership] accountSigner", accountSigner)
-        const accountAddresss = await accountSigner.getAddress()
-        setAccountAddress(accountAddresss)
+        const _signerAddress = await accountSigner.getAddress()
+        setAccountSignerAddress(_signerAddress)
 
-        console.log("[useMultiOwnerAccountOwnership] accountAddress", accountAddresss)
+        console.log("[useMultiOwnerAccountOwnership] accountAddress", _signerAddress)
         const ownerRole = await multiOwnerSmartAccount.OWNER_ROLE()
-        const isAccountOwner = await multiOwnerSmartAccount.hasRole(ownerRole, accountAddresss)
-
-        console.log("[useMultiOwnerAccountOwnership] accountAddress", accountAddress)
+        const isAccountOwner = await multiOwnerSmartAccount.hasRole(ownerRole, _signerAddress)
+        console.log("[useMultiOwnerAccountOwnership] accountAddress", _signerAddress)
         setIsOwner(isAccountOwner)
+
+        const signerRole = await multiOwnerSmartAccount.SIGNER_ROLE()
+        const isAccountSigner = await multiOwnerSmartAccount.hasRole(signerRole, _signerAddress)
+        console.log("[useMultiOwnerAccountOwnership] accountAddress", _signerAddress)
+        setIsSigner(isAccountSigner)
       }
     }
 
-    checkOwner()
-  }, [
-    accountSigner,
-    multiOwnerSmartAccount,
-    externalAccountAddress,
-    chainId,
-    setAccountAddress,
-    setIsOwner,
-    accountAddress,
-  ])
+    checkOwnerSigner()
+  }, [accountSigner, multiOwnerSmartAccount, externalAccountAddress, chainId, setIsOwner, setIsSigner])
 
-  console.log("[useMultiOwnerAccountOwnership] accountAddress", accountAddress)
-  return { isOwner, accountAddress }
+  return { isOwner, isSigner, accountSignerAddress, eoaAddress }
 }

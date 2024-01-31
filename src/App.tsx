@@ -5,17 +5,16 @@ import { Connect } from "./Connect.tsx"
 import { MetaMaskConnector } from "wagmi/connectors/metaMask"
 import { ERC20 } from "./ERC20.tsx"
 import { NativeWallet } from "./NativeWallet.tsx"
-import { WalletConnectConnector } from "wagmi/connectors/walletConnect"
 import { ExternalSmartAccount } from "./MultiSigAccount/ExternalSmartAccount.tsx"
 import { Paymaster } from "./Paymaster.tsx"
 import { Tabs } from "./Tabs.tsx"
 import { FAKE_FAKE_USD_ADDRESS, FAKE_USD_ADDRESS } from "../utils/const.ts"
 
-if (!import.meta.env.VITE_ALCHEMY_API_KEY) throw new Error("missing ALCHEMY_API_KEY")
+if (!import.meta.env.VITE_MUMBAI_ALCHEMY_API_KEY) throw new Error("missing ALCHEMY_API_KEY")
 
 const { chains, publicClient } = configureChains(
   [polygonMumbai],
-  [alchemyProvider({ apiKey: import.meta.env.VITE_ALCHEMY_API_KEY })]
+  [alchemyProvider({ apiKey: import.meta.env.VITE_MUMBAI_ALCHEMY_API_KEY })]
 )
 
 const wagmiConfig = createConfig({
@@ -23,12 +22,6 @@ const wagmiConfig = createConfig({
   connectors: [
     new MetaMaskConnector({
       chains,
-    }),
-    new WalletConnectConnector({
-      chains,
-      options: {
-        projectId: import.meta.env.VITE_WALLET_CONNECT_PROJECT_ID,
-      },
     }),
   ],
   publicClient,

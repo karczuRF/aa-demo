@@ -67,6 +67,7 @@ export function useAccountSigner({
     getAccountSigner()
   }, [publicProvider, owner, chainId, externalAccountAddress])
 
+  console.log("[useAccountSigner] accountSigner owner", owner)
   console.log("[useAccountSigner] accountSigner", accountSigner)
   return accountSigner
 }

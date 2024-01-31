@@ -6,7 +6,9 @@ import { MultiOwnerSmartAccount } from "./MultiOwnerSmartAccount.tsx"
 import { FAKE_USD_ADDRESS } from "../../utils/const.ts"
 
 export const ExternalSmartAccount: React.FC<ConnectionParams> = ({ chainId }) => {
-  const [externalAccountAddress, setExternalAccountAddress] = useState<Hex | undefined>()
+  const [externalAccountAddress, setExternalAccountAddress] = useState<Hex | undefined>(
+    "0x89872F0A5F6E8A2aa394E39F9b095761FA5577Eb"
+  )
 
   const handleChangeAccountAddress = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value
@@ -23,7 +25,8 @@ export const ExternalSmartAccount: React.FC<ConnectionParams> = ({ chainId }) =>
   return (
     <div style={{ margin: "24px", padding: "12px" }}>
       <h2>
-        Smart Account Address: <input value={externalAccountAddress} onChange={handleChangeAccountAddress} />
+        Smart Account Address:{" "}
+        <input style={{ width: "500px" }} value={externalAccountAddress} onChange={handleChangeAccountAddress} />
       </h2>
       <MultiOwnerSmartAccount
         address={FAKE_USD_ADDRESS}

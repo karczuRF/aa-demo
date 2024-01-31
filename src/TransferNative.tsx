@@ -6,6 +6,8 @@ import { utils } from "ethers"
 import { useEthersSigner } from "./aa/useEthersSigner.tsx"
 import { Hex } from "viem"
 
+// example account 0x75a12C0550fd620388bcdD7B0c2b8133Be53dEb4
+
 export const TransferNative: React.FC = () => {
   const [amount, setAmount] = useState<number>(0)
   const [address, setAddress] = useState<Hex | undefined>()
@@ -39,10 +41,12 @@ export const TransferNative: React.FC = () => {
   return (
     <div style={{ display: "flex", flexDirection: "column", margin: "24px 0 24px 0" }}>
       <b>
-        transfer native to <input value={address} onChange={handleChangeAddress} />
+        Transfer native to address: <input style={{ width: "320px" }} value={address} onChange={handleChangeAddress} />
       </b>
       <input type="number" value={amount} onChange={(e) => setAmount(Number(e.target.value))} />
-      <button onClick={handleTransfer}>transfer</button>
+      <button onClick={handleTransfer} style={{ color: signer ? "green" : "red" }}>
+        Transfer
+      </button>
     </div>
   )
 }

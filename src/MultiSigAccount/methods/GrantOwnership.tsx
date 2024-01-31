@@ -9,12 +9,12 @@ import { MultiOwnersSmartAccountParams } from "../MultiOwnersSmartAccount.types.
 export const GrantOwnership: React.FC<MultiOwnersSmartAccountParams> = ({ chainId, address }) => {
   const [newOwner, setNewOwner] = useState<string>("")
   const accountSigner = useAccountSigner({ chainId })
-
   const { multiOwnerSmartAccount } = useMultiOwnerSmartAccount({ chainId, address })
 
   const handleGrantOwnership = async () => {
-    console.log(multiOwnerSmartAccount, newOwner, accountSigner)
+    console.log("banan", multiOwnerSmartAccount, address, newOwner, accountSigner)
     if (multiOwnerSmartAccount && newOwner && accountSigner) {
+      console.log("banan xD")
       const address = await accountSigner.getAddress()
       const ownerRole = await multiOwnerSmartAccount.OWNER_ROLE()
 
@@ -23,6 +23,7 @@ export const GrantOwnership: React.FC<MultiOwnersSmartAccountParams> = ({ chainI
         data: transferData as Hex,
         to: address,
       }
+      console.log("user operation grant ownership", transferUserOperation)
       const userOperationTransaction = await accountSigner.sendTransaction(transferUserOperation)
 
       console.log("user operation grant ownership", userOperationTransaction)
@@ -33,7 +34,7 @@ export const GrantOwnership: React.FC<MultiOwnersSmartAccountParams> = ({ chainI
 
   return (
     <div style={{ display: "flex", flexDirection: "column", margin: "24px 0 24px 0" }}>
-      <b>user operation: grant permission</b>
+      <b>userOp: grant OWNER_ROLE (0xb19546dff01e856fb3f010c267a7b1c60363cf8a4664e21cc89c26224620214e)</b>
       <input type="text" value={newOwner} onChange={(e) => setNewOwner(String(e.target.value))} />
       <button onClick={handleGrantOwnership}>grant permission</button>
     </div>

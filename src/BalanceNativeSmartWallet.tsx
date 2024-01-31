@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react"
 
 import { useAccountSigner } from "./aa/useAccountSigner.tsx"
 import { MultiOwnersSmartAccountParams } from "./account-abstraction/MultiSigAccountAbstraction.types.ts"
+import { utils } from "ethers"
 
 export const BalanceNativeSmartWallet: React.FC<MultiOwnersSmartAccountParams> = (accountParams) => {
   const [balance, setBalance] = useState<string>("0")
@@ -25,7 +26,7 @@ export const BalanceNativeSmartWallet: React.FC<MultiOwnersSmartAccountParams> =
   return (
     <div style={{ display: "flex", flexDirection: "column", margin: "24px 0 24px 0" }}>
       <b>Native Balance of SmartWallet {address}</b>
-      <span>{balance}</span>
+      <span>{utils.formatUnits(balance, 18)}</span>
     </div>
   )
 }
