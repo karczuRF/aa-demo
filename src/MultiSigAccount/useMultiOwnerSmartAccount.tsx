@@ -3,11 +3,13 @@ import { useEffect, useState } from "react"
 import { useAccountSigner } from "../aa/useAccountSigner.tsx"
 import { MultiOwnersSmartAccountParams } from "./MultiOwnersSmartAccount.types.ts"
 import { usePublicEthersProvider } from "../aa/usePublicEthersProvider.tsx"
-import { MultiSigSmartAccount, MultiSigSmartAccount__factory } from "aams-test/src/typechain"
+import * as aams from "aams-test"
+
+const { typechain } = aams
 
 export function useMultiOwnerSmartAccount(multiOwnersSmartAccountParams: MultiOwnersSmartAccountParams) {
   const { chainId, externalAccountAddress } = multiOwnersSmartAccountParams
-  const [multiOwnerSmartAccount, setMultiOwnerSmartAccount] = useState<MultiSigSmartAccount>()
+  const [multiOwnerSmartAccount, setMultiOwnerSmartAccount] = useState<typechain.MultiSigSmartAccount>()
   const [isAccountCreated, setIsAccountCreated] = useState<boolean>(false)
   const [nonce, setNonce] = useState<string | undefined>()
 
@@ -27,7 +29,7 @@ export function useMultiOwnerSmartAccount(multiOwnersSmartAccountParams: MultiOw
           console.log("useMultiOwnerSmartAccount isAccountCreated", isAccountCreated)
           setIsAccountCreated(isAccountCreated)
           if (isAccountCreated) {
-            const multiOwnerSmartAccount = MultiSigSmartAccount__factory.connect(accountAddress)
+            const multiOwnerSmartAccount = typechain.MultiSigSmartAccount__factory.connect(accountAddress)
 
             const nonce = await multiOwnerSmartAccount.getNonce()
             setNonce(nonce.toString())

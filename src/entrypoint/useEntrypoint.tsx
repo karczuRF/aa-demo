@@ -1,15 +1,15 @@
 import { useEffect, useState } from "react"
 import { useEthersSigner } from "../aa/useEthersSigner.tsx"
 import { ConnectionParams } from "../account-abstraction/MultiSigAccountAbstraction.types.ts"
-import { EntryPoint, EntryPoint__factory } from "aams-test/src/typechain"
+import { typechain } from "aams-test"
 
 export function useEntrypoint({ entrypointAddress, chainId }: { entrypointAddress: string } & ConnectionParams) {
-  const [entrypoint, setEntrypoint] = useState<EntryPoint>()
+  const [entrypoint, setEntrypoint] = useState<typechain.EntryPoint>()
   const signer = useEthersSigner({ chainId })
 
   useEffect(() => {
     if (signer) {
-      const Entrypoint = EntryPoint__factory.connect(entrypointAddress)
+      const Entrypoint = typechain.EntryPoint__factory.connect(entrypointAddress)
       setEntrypoint(Entrypoint)
     }
   }, [signer])

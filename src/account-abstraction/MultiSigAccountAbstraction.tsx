@@ -3,8 +3,10 @@ import { concatHex, encodeFunctionData, hexToBytes, type Hex, FallbackTransport,
 
 import { BaseSmartContractAccount, BatchUserOperationCallData, SmartAccountSigner } from "@alchemy/aa-core"
 
-import { MultiSigSmartAccountFactory_abi, MultiSigSmartAccount_abi } from "aams-test/src/abi/"
+import * as aams from "aams-test"
 import { MultiSigAccountAbstractionParams, MultiSigAccountAbstractionParamsSchema } from "./schema"
+
+const { MultiSigSmartAccountFactory_abi, MultiSigSmartAccount_abi } = aams.abi
 
 export class MultiSigAccountAbstraction<
   TTransport extends Transport | FallbackTransport = Transport

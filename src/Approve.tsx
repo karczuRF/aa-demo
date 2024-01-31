@@ -10,7 +10,7 @@ export const Approve: React.FC<ERC20Params> = ({ address, toAddress, ...connecti
 
   const handleApprove = async () => {
     if (erc20) {
-      const amountBN = BigNumber.from(amount).mul(BigNumber.from(10).pow(18))
+      const amountBN = BigNumber.from(amount).mul(BigNumber.from(10).pow(18)).toNumber()
       const transaction = await erc20.approve(toAddress, amountBN)
       await transaction.wait()
     }
