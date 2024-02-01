@@ -1,21 +1,20 @@
 import React, { useState } from "react"
 
 import { MultiOwnersSmartAccountParams } from "../MultiOwnersSmartAccount.types.ts"
-import { useAccountSigner } from "../../aa/useAccountSigner.tsx"
 
-import { MultiSigSmartAccount } from "aams-test/dist/typechain/index"
+import { useMultiOwnerSmartAccount } from "../useMultiOwnerSmartAccount.tsx"
+import { ERC1271_MAGICVALUE_BYTES32 } from "../../../utils/const.ts"
 
 export const VerifySignature: React.FC<MultiOwnersSmartAccountParams> = (accountParams) => {
-  const { chainId } = accountParams
-  const [newOwner, setNewOwner] = useState<string>("")
-  const [hash, setHash] = useState<string>("")
-  const [signature, setSignature] = useState<string>("")
-  const accountSigner = useAccountSigner({ chainId })
+  const [hash, setHash] = useState<string>("hash")
+  const [isValidSig, setIsValidSig] = useState<boolean>()
+  const [signature, setSignature] = useState<string>("signature")
+  const { isAccountCreated, multiOwnerSmartAccount } = useMultiOwnerSmartAccount(accountParams)
 
   const handleVerifySignature = async () => {
-    console.log("verify signature", chainId)
-    if (hash && signature && accountSigner) {
-      const address = await accountSigner.getAddress()
+    console.log("verify signature", signature)
+    if (hash && signature && isAccountCreated && multiOwnerSmartAccount) {
+      const isValidValue = await multiOwnerSmartAccount.isValidSignature(hash, signature)
 
       // const transferData = MultiSigSmartAccount.encodeFunctionData("grantRole", [])
       // const transferUserOperation: TransactionRequest = {
@@ -24,18 +23,23 @@ export const VerifySignature: React.FC<MultiOwnersSmartAccountParams> = (account
       // }
       // const userOperationTransaction = await accountSigner.sendTransaction(transferUserOperation)
 
-      console.log("user operation grant ownership")
+      console.log("is valid", isValidValue)
 
       setHash(hash)
-      setHash(signature)
+      setSignature(signature)
+      setIsValidSig(isValidValue == ERC1271_MAGICVALUE_BYTES32)
     }
   }
 
   return (
     <div style={{ display: "flex", flexDirection: "column", margin: "24px 0 24px 0" }}>
       <b>user operation: signature hash</b>
-      <input type="text" value={newOwner} onChange={(e) => setNewOwner(String(e.target.value))} />
+      sig
+      <input type="text" value={signature} onChange={(e) => setSignature(String(e.target.value))} />
+      hash
+      <input type="text" value={hash} onChange={(e) => setHash(String(e.target.value))} />
       <button onClick={handleVerifySignature}>Verify Signature</button>
+      <h4 style={{ color: isValidSig ? "green" : "red" }}>Is Valid? {isValidSig ? "yes" : "no"}</h4>
     </div>
   )
 }

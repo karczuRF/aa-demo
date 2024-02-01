@@ -9,6 +9,7 @@ import { ExternalSmartAccount } from "./MultiSigAccount/ExternalSmartAccount.tsx
 import { Paymaster } from "./Paymaster.tsx"
 import { Tabs } from "./Tabs.tsx"
 import { FAKE_FAKE_USD_ADDRESS, FAKE_USD_ADDRESS } from "../utils/const.ts"
+import { SmartAccountFactory } from "./factory/SmartAccountFactory.tsx"
 
 if (!import.meta.env.VITE_MUMBAI_ALCHEMY_API_KEY) throw new Error("missing ALCHEMY_API_KEY")
 
@@ -60,6 +61,11 @@ function App() {
               id: "smart-account",
               name: "SmartAccount",
               component: <ExternalSmartAccount chainId={chainId} />,
+            },
+            {
+              id: "factory",
+              name: "Factory",
+              component: <SmartAccountFactory chainId={chainId} />,
             },
           ]}
         />

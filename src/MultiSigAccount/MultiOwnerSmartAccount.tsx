@@ -6,6 +6,7 @@ import React from "react"
 import { NativeSmartWallet } from "../NativeSmartWallet.tsx"
 import { GrantOwnership } from "./methods/GrantOwnership.tsx"
 import { VerifySignature } from "./methods/VerifySignature.tsx"
+import { CreateSignature } from "./methods/CreateSignature.tsx"
 
 // smart account address 0x89872F0A5F6E8A2aa394E39F9b095761FA5577Eb
 
@@ -35,6 +36,7 @@ export const MultiOwnerSmartAccount: React.FC<MultiOwnersSmartAccountParams> = (
         <>
           <GrantOwnership {...multiOwnersSmartAccountParams} />
           <VerifySignature {...multiOwnersSmartAccountParams} />
+          <CreateSignature {...multiOwnersSmartAccountParams} />
         </>
       )}
     </div>
