@@ -1,5 +1,5 @@
-import { Chain } from "viem"
+import { Chain, Hex } from "viem"
 
-export type SmartAccountFactoryParams = ConnectionParams
+export type SmartAccountFactoryParams = { factoryAddress?: Hex } & ConnectionParams
 
 export type ConnectionParams = { chainId: Chain["id"] }

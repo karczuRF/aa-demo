@@ -1,6 +1,6 @@
 import { MultiOwnersSmartAccountParams } from "./MultiOwnersSmartAccount.types.ts"
 import { useMultiOwnerAccountOwnership } from "./methods/useMultiOwnerAccountOwnership.tsx"
-import { useEOA } from "../eoa/useEOA.tsx"
+
 import { useMultiOwnerSmartAccount } from "./useMultiOwnerSmartAccount.tsx"
 import React from "react"
 import { NativeSmartWallet } from "../NativeSmartWallet.tsx"
@@ -23,7 +23,7 @@ export const MultiOwnerSmartAccount: React.FC<MultiOwnersSmartAccountParams> = (
   return (
     <div style={{ margin: "24px", padding: "12px" }}>
       <div>
-        <h2>Smart Account Address: {accountSignerAddress}</h2>
+        <h2 >Smart Account Address: {accountSignerAddress}</h2>
         <h3>EOA Address: {eoaAddress}</h3>
         <h3>Account Signer Address: {accountSignerAddress}</h3>
         <h4 style={{ color: isOwner ? "green" : "red" }}>Is owner? {isOwner ? "yes" : "no"}</h4>

@@ -25,11 +25,8 @@ export const SmartAccountFactory: React.FC<ConnectionParams> = ({ chainId }) => 
         Smart Account Factory:{" "}
         <input style={{ width: "500px" }} value={factoryAddress} onChange={handleChangeAccountAddress} />
       </h2>
-      <div style={{ display: "flex", flexDirection: "column", margin: "24px 0 24px 0" }}>
-        <b>Factory address: {factoryAddress}</b>
-      </div>
       <>
-        <CreateSmartAccount chainId={chainId} />
+        <CreateSmartAccount chainId={chainId} factoryAddress={factoryAddress} />
       </>
     </div>
   )

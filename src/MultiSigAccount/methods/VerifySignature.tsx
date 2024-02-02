@@ -38,8 +38,8 @@ export const VerifySignature: React.FC<MultiOwnersSmartAccountParams> = (account
       <input type="text" value={signature} onChange={(e) => setSignature(String(e.target.value))} />
       hash
       <input type="text" value={hash} onChange={(e) => setHash(String(e.target.value))} />
-      <button onClick={handleVerifySignature}>Verify Signature</button>
-      <h4 style={{ color: isValidSig ? "green" : "red" }}>Is Valid? {isValidSig ? "yes" : "no"}</h4>
+      {/* <button onClick={handleVerifySignature}>Verify Signature</button> */}
+      {/* <h4 style={{ color: isValidSig ? "green" : "red" }}>Is Valid? {isValidSig ? "yes" : "no"}</h4> */}
     </div>
   )
 }

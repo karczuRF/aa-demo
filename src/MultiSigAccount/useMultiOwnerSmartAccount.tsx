@@ -9,6 +9,7 @@ import { MultiSigSmartAccount_abi } from "aams-test/dist/abi/index"
 
 export function useMultiOwnerSmartAccount(multiOwnersSmartAccountParams: MultiOwnersSmartAccountParams) {
   const { chainId, externalAccountAddress } = multiOwnersSmartAccountParams
+
   const [multiOwnerSmartAccount, setMultiOwnerSmartAccount] = useState<MultiSigSmartAccount>()
   const [isAccountCreated, setIsAccountCreated] = useState<boolean>(false)
   const [nonce, setNonce] = useState<string | undefined>()
