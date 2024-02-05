@@ -23,11 +23,11 @@ export const MultiOwnerSmartAccount: React.FC<MultiOwnersSmartAccountParams> = (
   return (
     <div style={{ margin: "24px", padding: "12px" }}>
       <div>
-        <h2 >Smart Account Address: {accountSignerAddress}</h2>
+        <h2>Smart Account Address: {accountSignerAddress}</h2>
         <h3>EOA Address: {eoaAddress}</h3>
         <h3>Account Signer Address: {accountSignerAddress}</h3>
-        <h4 style={{ color: isOwner ? "green" : "red" }}>Is owner? {isOwner ? "yes" : "no"}</h4>
-        <h4 style={{ color: isSigner ? "green" : "red" }}>Is signer? {isSigner ? "yes" : "no"}</h4>
+        <h4 style={{ color: isOwner ? "green" : "red" }}>Is EOA owner? {isOwner ? "yes" : "no"}</h4>
+        <h4 style={{ color: isSigner ? "green" : "red" }}>Is EOA signer? {isSigner ? "yes" : "no"}</h4>
       </div>
       <NativeSmartWallet {...multiOwnersSmartAccountParams} />
       {/* <UserOperationsERC20 {...multiOwnersSmartAccountParams} /> */}

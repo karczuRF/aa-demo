@@ -31,12 +31,12 @@ export const useMultiOwnerAccountOwnership = (multiOwnersSmartAccountParams: Mul
 
         console.log("[useMultiOwnerAccountOwnership] accountAddress", _signerAddress)
         const ownerRole = await multiOwnerSmartAccount.OWNER_ROLE()
-        const isAccountOwner = await multiOwnerSmartAccount.hasRole(ownerRole, _signerAddress)
+        const isAccountOwner = await multiOwnerSmartAccount.hasRole(ownerRole, eoaAddress)
         console.log("[useMultiOwnerAccountOwnership] accountAddress", _signerAddress)
         setIsOwner(isAccountOwner)
 
         const signerRole = await multiOwnerSmartAccount.SIGNER_ROLE()
-        const isAccountSigner = await multiOwnerSmartAccount.hasRole(signerRole, _signerAddress)
+        const isAccountSigner = await multiOwnerSmartAccount.hasRole(signerRole, eoaAddress)
         console.log("[useMultiOwnerAccountOwnership] accountAddress", _signerAddress)
         setIsSigner(isAccountSigner)
       }

@@ -7,7 +7,7 @@ import { FAKE_USD_ADDRESS } from "../../utils/const.ts"
 
 export const ExternalSmartAccount: React.FC<ConnectionParams> = ({ chainId }) => {
   const [externalAccountAddress, setExternalAccountAddress] = useState<Hex | undefined>(
-    "0x89872F0A5F6E8A2aa394E39F9b095761FA5577Eb"
+    "0x3183b5C72Fc2d9FaC2984c624Ff9cEeB677De98D"
   )
 
   const handleChangeAccountAddress = (event: React.ChangeEvent<HTMLInputElement>) => {

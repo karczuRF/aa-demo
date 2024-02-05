@@ -18,6 +18,7 @@ export function useAccountSigner({
   externalAccountAddress?: Hex
 }) {
   const [accountSigner, setAccountSigner] = useState<AccountSigner<ISmartContractAccount> | undefined>()
+  const [accountOwner, setAccountOwner] = useState<string | undefined>()
   const owner = useAccountOwner({ chainId })
   const publicProvider = usePublicEthersProvider({ chainId })
 
@@ -62,12 +63,13 @@ export function useAccountSigner({
         //   })
         // })
         setAccountSigner(accountSigner)
+        setAccountOwner(await owner.getAddress())
       }
     }
     getAccountSigner()
   }, [publicProvider, owner, chainId, externalAccountAddress])
 
-  console.log("[useAccountSigner] accountSigner owner", owner)
+  console.log("[useAccountSigner] accountSigner owner", accountOwner)
   console.log("[useAccountSigner] accountSigner", accountSigner)
   return accountSigner
 }

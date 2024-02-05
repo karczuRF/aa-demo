@@ -48,7 +48,6 @@ function App() {
               component: (
                 <>
                   <ERC20 address={FAKE_USD_ADDRESS} chainId={chainId} />
-                  <ERC20 address={FAKE_FAKE_USD_ADDRESS} chainId={chainId} />
                 </>
               ),
             },

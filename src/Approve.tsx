@@ -6,11 +6,11 @@ import { ERC20Params } from "./ERC20.types.tsx"
 
 export const Approve: React.FC<ERC20Params> = ({ address, toAddress, ...connectionParams }) => {
   const [amount, setAmount] = useState<number>(0)
-  const { erc20 } = useERC20({ address, ...connectionParams })
+  const { erc20, decimals } = useERC20({ address, ...connectionParams })
 
   const handleApprove = async () => {
-    if (erc20) {
-      const amountBN = BigNumber.from(amount).mul(BigNumber.from(10).pow(18)).toNumber()
+    if (erc20 && decimals) {
+      const amountBN = BigNumber.from(amount).mul(BigNumber.from(10).pow(decimals)).toNumber()
       const transaction = await erc20.approve(toAddress, amountBN)
       await transaction.wait()
     }

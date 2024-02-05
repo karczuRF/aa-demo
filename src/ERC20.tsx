@@ -23,7 +23,7 @@ export const ERC20: React.FC<ConnectionParams & { address: string }> = ({ addres
 
   return (
     <div style={{ margin: "48px", padding: "12px", border: "1px solid black" }}>
-      <h3 style={{ color: "blue" }}>ERC20 (address: {address}) contract interactions</h3>
+      <h3 style={{ color: "yellow" }}>ERC20 (address: {address}) contract interactions</h3>
       <h2>
         {" "}
         To address: <input value={toAddress} onChange={handleChangeAddress} />{" "}
