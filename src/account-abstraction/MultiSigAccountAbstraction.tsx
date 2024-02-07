@@ -1,15 +1,20 @@
 import type { Address } from "abitype"
-import { concatHex, encodeFunctionData, hexToBytes, type Hex, FallbackTransport, Transport } from "viem"
-
 import {
-  BaseSmartContractAccount,
-  BatchUserOperationCallData,
-  SimpleSmartContractAccount,
-  SmartAccountSigner,
-} from "@alchemy/aa-core"
+  concatHex,
+  encodeFunctionData,
+  hexToBytes,
+  type Hex,
+  FallbackTransport,
+  Transport,
+  numberToBytes,
+  stringToBytes,
+} from "viem"
+
+import { BaseSmartContractAccount, BatchUserOperationCallData, SmartAccountSigner } from "@alchemy/aa-core"
 
 import * as aams from "aams-test"
 import { MultiSigAccountAbstractionParams, MultiSigSmartAccountParamsSchema } from "./schema"
+import { BytesLike, utils } from "ethers"
 
 const { MultiSigSmartAccountFactory_abi, MultiSigSmartAccount_abi } = aams.abi
 
@@ -17,15 +22,17 @@ export class MultiSigAccountAbstraction<
   TTransport extends Transport | FallbackTransport = Transport
 > extends BaseSmartContractAccount<TTransport, SmartAccountSigner> {
   protected owner: SmartAccountSigner
+  protected combinedPubKeys: Address[]
   protected factoryAddress: Address
-  protected index: bigint
+  protected salt: BytesLike
 
   constructor(params: MultiSigAccountAbstractionParams<TTransport>) {
     MultiSigSmartAccountParamsSchema<TTransport>().parse(params)
 
     super(params)
     this.owner = params.owner
-    this.index = params.index ?? 0n
+    this.combinedPubKeys = params.combinedPubKeys?.map((key) => key as Hex) ?? []
+    this.salt = params.salt ?? utils.formatBytes32String("salt")
     this.factoryAddress = params.factoryAddress as Hex
   }
 
@@ -70,12 +77,13 @@ export class MultiSigAccountAbstraction<
   }
 
   protected async getAccountInitCode(): Promise<`0x${string}`> {
+    const owner = await this.owner.getAddress()
     return concatHex([
       this.factoryAddress,
       encodeFunctionData({
         abi: MultiSigSmartAccountFactory_abi,
         functionName: "createAccount",
-        args: [await this.owner.getAddress(), this.index],
+        args: [owner, this.combinedPubKeys, this.salt],
       }),
     ])
   }

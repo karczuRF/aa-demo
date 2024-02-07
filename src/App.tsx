@@ -8,7 +8,7 @@ import { NativeWallet } from "./NativeWallet.tsx"
 import { ExternalSmartAccount } from "./MultiSigAccount/ExternalSmartAccount.tsx"
 import { Paymaster } from "./Paymaster.tsx"
 import { Tabs } from "./Tabs.tsx"
-import { FAKE_FAKE_USD_ADDRESS, FAKE_USD_ADDRESS } from "../utils/const.ts"
+import { FAKE_USD_ADDRESS } from "../utils/const.ts"
 import { SmartAccountFactory } from "./factory/SmartAccountFactory.tsx"
 
 if (!import.meta.env.VITE_MUMBAI_ALCHEMY_API_KEY) throw new Error("missing ALCHEMY_API_KEY")

@@ -3,6 +3,7 @@ import { FallbackTransport, Transport, isHex } from "viem"
 import { Address } from "abitype/zod"
 import z from "zod"
 import {
+  BaseSmartAccountParams,
   ChainSchema,
   SmartAccountSigner,
   SupportedTransports,
@@ -34,7 +35,8 @@ export const MultiSigSmartAccountParamsSchema = <
 >() =>
   createBaseSmartAccountParamsSchema<TTransport, TOwner>().extend({
     owner: z.custom<TOwner>(isSigner),
-    index: z.bigint().optional(),
+    combinedPubKeys: z.array(z.string()).optional(),
+    salt: z.string().optional(),
     factoryAddress: z.string(),
   })
 

@@ -1,14 +1,15 @@
 import { useEthersSigner } from "./useEthersSigner"
 import { useMemo } from "react"
-import { getRPCProviderSigner } from "./getRPCProviderOwner.ts"
 import { Chain } from "viem"
+import { getSchnorrSigner } from "./getSchnorrSigner.ts"
+import { useMultiSigAccountSigner } from "./smartAccointSigner.ts"
 
 export function useAccountOwner({ chainId }: { chainId: Chain["id"] }) {
-  const signer = useEthersSigner({ chainId })
+  // const signer = useEthersSigner({ chainId })
 
-  const owner = useMemo(() => {
-    if (signer) return getRPCProviderSigner(signer)
-  }, [signer])
+  const signer = useMemo(() => {
+    if (chainId) return getSchnorrSigner()
+  }, [chainId])
 
-  return owner
+  return signer
 }

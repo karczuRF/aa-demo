@@ -3,9 +3,9 @@ import { useEffect, useState } from "react"
 import { useAccountSigner } from "../aa/useAccountSigner.tsx"
 import { MultiOwnersSmartAccountParams } from "./MultiOwnersSmartAccount.types.ts"
 import { usePublicEthersProvider } from "../aa/usePublicEthersProvider.tsx"
-import { MultiSigSmartAccount } from "aams-test/dist/typechain/index"
 import { ethers } from "ethers"
 import { MultiSigSmartAccount_abi } from "aams-test/dist/abi/index"
+import { MultiSigSmartAccount } from "aams-test/dist/typechain/index"
 
 export function useMultiOwnerSmartAccount(multiOwnersSmartAccountParams: MultiOwnersSmartAccountParams) {
   const { chainId, externalAccountAddress } = multiOwnersSmartAccountParams
