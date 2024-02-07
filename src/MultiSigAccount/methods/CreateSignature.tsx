@@ -61,7 +61,7 @@ export const CreateSignature: React.FC<MultiOwnersSmartAccountParams> = (account
 
   const handleVerifySignature = async () => {
     console.log("verify signature", chainId)
-    if (multiOwnerSmartAccount) {
+    if (summedMuSig && multiOwnerSmartAccount) {
       // const pubKeys = schnorrSigners.map((sig) => sig.getPublicKey())
       // const combinedPublicKey = Schnorrkel.getCombinedPublicKey(pubKeys)
       // const px = ethers.utils.hexlify(combinedPublicKey.buffer.slice(1, 33))

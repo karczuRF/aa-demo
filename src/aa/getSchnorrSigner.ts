@@ -1,14 +1,26 @@
-import { SignTypedDataParams, SmartAccountSigner } from "@alchemy/aa-core"
+import { SignTypedDataParams, SmartAccountSigner, WalletClientSigner } from "@alchemy/aa-core"
 import Schnorrkel from "aams-test/dist/schnorrkel"
-import { Key, SignatureOutput } from "aams-test/dist/types"
+import { SignatureOutput } from "aams-test/dist/types"
 import { pKeyString2Key } from "aams-test/dist/utils/schnorr-helpers"
-import { TypedDataField, ethers, providers } from "ethers"
-import { Hex, hexToSignature, isHex, signatureToHex } from "viem"
-// import { Buffer as BufferPolyfill } from "buffer"
-// declare var Buffer: typeof BufferPolyfill
-// globalThis.Buffer = BufferPolyfill
+import { Hex, createWalletClient, hexToSignature, http, isHex, signatureToHex } from "viem"
+import { privateKeyToAccount } from "viem/accounts"
+import { polygonMumbai } from "wagmi/chains"
 
-// console.log("buffer", Buffer.from("foo", "hex"))
+// if you have a mnemonic, viem also exports a mnemonicToAccount function (see above import)
+// const [signer1, signer2] = useSchnorrSigners({ chainId: polygonMumbai.id })
+const account = privateKeyToAccount(import.meta.env.VITE_SIGNER_PRIVATE_KEY)
+
+export const client = createWalletClient({
+  account,
+  chain: polygonMumbai,
+  transport: http(), // TODO set like this for now; whatever
+})
+
+// this can now be used as an owner for a Smart Contract Account
+export const eoaSigner = new WalletClientSigner(
+  client,
+  "local" // signerType
+)
 
 export const fixSignedData = (sig: Hex): Hex => {
   let signature = sig
@@ -39,25 +51,18 @@ const _signSchnorr = (msg: Uint8Array | Hex | string): SignatureOutput => {
   return _sig
 }
 
-export function getRPCProviderSigner(signer: providers.JsonRpcSigner): SmartAccountSigner {
+export function getSchnorrSigner(): SmartAccountSigner {
   return {
     signerType: "schnorr",
-    inner: signer,
-    getAddress: async () => Promise.resolve((await signer.getAddress()) as `0x${string}`),
-    // signMessage: async (msg: Uint8Array | string) => (await signer.signMessage(msg)) as `0x${string}`,
+    inner: client,
+    getAddress: async () => Promise.resolve((await eoaSigner.getAddress()) as `0x${string}`),
     signMessage: async (msg: Uint8Array | Hex | string) => {
       const sig = _signSchnorr(msg)
       console.log("SCHNORR SIGNATURE", { sig })
       return sig.signature.toHex() as Hex
     },
     signTypedData: async (params: SignTypedDataParams) => {
-      return fixSignedData(
-        (await signer._signTypedData(
-          params.domain!,
-          params.types as unknown as Record<string, TypedDataField[]>,
-          params.message
-        )) as Hex
-      )
+      return fixSignedData((await eoaSigner.signTypedData(params)) as Hex)
     },
   }
 }

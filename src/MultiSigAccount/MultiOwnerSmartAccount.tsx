@@ -7,6 +7,8 @@ import { NativeSmartWallet } from "../NativeSmartWallet.tsx"
 import { GrantOwnership } from "./methods/GrantOwnership.tsx"
 import { VerifySignature } from "./methods/VerifySignature.tsx"
 import { CreateSignature } from "./methods/CreateSignature.tsx"
+import { UserOperationsERC20 } from "../UserOperationsERC20.tsx"
+import { BalanceNative } from "../BalanceNative.tsx"
 
 // smart account address 0x89872F0A5F6E8A2aa394E39F9b095761FA5577Eb
 
@@ -30,7 +32,7 @@ export const MultiOwnerSmartAccount: React.FC<MultiOwnersSmartAccountParams> = (
         <h4 style={{ color: isSigner ? "green" : "red" }}>Is EOA signer? {isSigner ? "yes" : "no"}</h4>
       </div>
       <NativeSmartWallet {...multiOwnersSmartAccountParams} />
-      {/* <UserOperationsERC20 {...multiOwnersSmartAccountParams} /> */}
+      <UserOperationsERC20 {...multiOwnersSmartAccountParams} />
 
       {isAccountCreated && (
         <>

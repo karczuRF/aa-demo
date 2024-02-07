@@ -1,14 +1,15 @@
 import { usePublicEthersProvider } from "./usePublicEthersProvider"
-import { ISmartContractAccount, getChain } from "@alchemy/aa-core"
+import { SmartAccountSigner, getChain } from "@alchemy/aa-core"
 // import { withAlchemyGasFeeEstimator } from "@alchemy/aa-alchemy";
 import { AccountSigner, EthersProviderAdapter } from "@alchemy/aa-ethers"
-import { providers } from "ethers"
+import { ethers, providers } from "ethers"
 import { useAccountOwner } from "./useAccountOwner.tsx"
 import { Chain, Hex } from "viem"
 // import {WHITELIST_PAYMASTER} from "./constants.ts";
 import { MultiSigAccountAbstraction } from "../account-abstraction/MultiSigAccountAbstraction.tsx"
 import { useEffect, useState } from "react"
 import { ENTRYPOINT_ADDRESS, MUSIG_ACCOUNT_FACTORY_ADDRESS } from "../../utils/const.ts"
+import { getSchnorrSigner } from "./getSchnorrSigner.ts"
 
 export function useAccountSigner({
   chainId,
@@ -17,15 +18,15 @@ export function useAccountSigner({
   chainId: Chain["id"]
   externalAccountAddress?: Hex
 }) {
-  const [accountSigner, setAccountSigner] = useState<AccountSigner<ISmartContractAccount> | undefined>()
+  const [accountSigner, setAccountSigner] = useState<AccountSigner<MultiSigAccountAbstraction> | undefined>()
   const [accountOwner, setAccountOwner] = useState<string | undefined>()
-  const owner = useAccountOwner({ chainId })
+  const _schnorrSigner = getSchnorrSigner()
   const publicProvider = usePublicEthersProvider({ chainId })
 
   console.log("[useAccountSigner] externalAccountAddress", externalAccountAddress)
   useEffect(() => {
     async function getAccountSigner() {
-      if (publicProvider instanceof providers.JsonRpcProvider && owner) {
+      if (publicProvider instanceof providers.JsonRpcProvider) {
         const accountProvider = EthersProviderAdapter.fromEthersProvider(publicProvider)
         //     .withPaymasterMiddleware({
         //     dummyPaymasterDataMiddleware: async () => { return { paymasterAndData: WHITELIST_PAYMASTER } },
@@ -36,7 +37,7 @@ export function useAccountSigner({
           const smartAccount = new MultiSigAccountAbstraction({
             entryPointAddress: ENTRYPOINT_ADDRESS,
             chain: getChain(publicProvider.network.chainId),
-            owner,
+            owner: _schnorrSigner,
             factoryAddress: MUSIG_ACCOUNT_FACTORY_ADDRESS,
             rpcClient,
             accountAddress: externalAccountAddress,
@@ -63,11 +64,11 @@ export function useAccountSigner({
         //   })
         // })
         setAccountSigner(accountSigner)
-        setAccountOwner(await owner.getAddress())
+        setAccountOwner(await _schnorrSigner.getAddress())
       }
     }
     getAccountSigner()
-  }, [publicProvider, owner, chainId, externalAccountAddress])
+  }, [publicProvider, _schnorrSigner, chainId, externalAccountAddress])
 
   console.log("[useAccountSigner] accountSigner owner", accountOwner)
   console.log("[useAccountSigner] accountSigner", accountSigner)

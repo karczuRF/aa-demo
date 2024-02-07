@@ -1,27 +1,32 @@
 import type { Address } from "abitype"
 import { concatHex, encodeFunctionData, hexToBytes, type Hex, FallbackTransport, Transport } from "viem"
 
-import { BaseSmartContractAccount, BatchUserOperationCallData, SmartAccountSigner } from "@alchemy/aa-core"
+import {
+  BaseSmartContractAccount,
+  BatchUserOperationCallData,
+  SimpleSmartContractAccount,
+  SmartAccountSigner,
+} from "@alchemy/aa-core"
 
 import * as aams from "aams-test"
-import { MultiSigAccountAbstractionParams, MultiSigAccountAbstractionParamsSchema } from "./schema"
+import { MultiSigAccountAbstractionParams, MultiSigSmartAccountParamsSchema } from "./schema"
 
 const { MultiSigSmartAccountFactory_abi, MultiSigSmartAccount_abi } = aams.abi
 
 export class MultiSigAccountAbstraction<
   TTransport extends Transport | FallbackTransport = Transport
-> extends BaseSmartContractAccount<TTransport> {
+> extends BaseSmartContractAccount<TTransport, SmartAccountSigner> {
   protected owner: SmartAccountSigner
   protected factoryAddress: Address
   protected index: bigint
 
   constructor(params: MultiSigAccountAbstractionParams<TTransport>) {
-    MultiSigAccountAbstractionParamsSchema<TTransport>().parse(params)
+    MultiSigSmartAccountParamsSchema<TTransport>().parse(params)
 
     super(params)
-    this.index = params.index ?? 0n
     this.owner = params.owner
-    this.factoryAddress = params.factoryAddress
+    this.index = params.index ?? 0n
+    this.factoryAddress = params.factoryAddress as Hex
   }
 
   getDummySignature(): `0x${string}` {
