@@ -20,9 +20,9 @@ export function useMultiOwnerSmartAccount(multiOwnersSmartAccountParams: MultiOw
 
   useEffect(() => {
     async function connectMultiOwnerSmartAccount() {
+      const accountAddress = await accountSigner?.getAddress()
+      console.log("banan useMultiOwnerSmartAccount account address", accountAddress)
       if (accountSigner) {
-        const accountAddress = await accountSigner.getAddress()
-        console.log("banan useMultiOwnerSmartAccount account address", accountAddress)
         if (signer && accountAddress && provider) {
           const accountCode = await provider.getCode(accountAddress)
           console.log("useMultiOwnerSmartAccount accountCode", accountCode)
@@ -32,9 +32,9 @@ export function useMultiOwnerSmartAccount(multiOwnersSmartAccountParams: MultiOw
           if (isAccountCreated) {
             // const multiOwnerSmartAccount = MultiSigSmartAccount__factory.connect(accountAddress)
             const _smartAccount = new ethers.Contract(
-              accountAddress,
+              "0x3183b5C72Fc2d9FaC2984c624Ff9cEeB677De98D",
               MultiSigSmartAccount_abi,
-              signer
+              accountSigner
             ) as unknown as MultiSigSmartAccount
 
             const nonce = await _smartAccount.getNonce()

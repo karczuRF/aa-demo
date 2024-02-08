@@ -1,14 +1,5 @@
 import type { Address } from "abitype"
-import {
-  concatHex,
-  encodeFunctionData,
-  hexToBytes,
-  type Hex,
-  FallbackTransport,
-  Transport,
-  numberToBytes,
-  stringToBytes,
-} from "viem"
+import { concatHex, encodeFunctionData, hexToBytes, type Hex, FallbackTransport, Transport } from "viem"
 
 import { BaseSmartContractAccount, BatchUserOperationCallData, SmartAccountSigner } from "@alchemy/aa-core"
 
@@ -75,6 +66,17 @@ export class MultiSigAccountAbstraction<
 
     return this.owner.signMessage(msg)
   }
+
+  // OVERRIDE USER OPERATION SIG?
+  // override signUserOperationHash(msg: Uint8Array | string): Promise<`0x${string}`> {
+  //   if (typeof msg === "string" && msg.startsWith("0x")) {
+  //     msg = hexToBytes(msg as Hex)
+  //   } else if (typeof msg === "string") {
+  //     msg = new TextEncoder().encode(msg)
+  //   }
+
+  //   return this.owner.signMessage(msg)
+  // }
 
   protected async getAccountInitCode(): Promise<`0x${string}`> {
     const owner = await this.owner.getAddress()

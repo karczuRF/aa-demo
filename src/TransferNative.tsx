@@ -4,7 +4,8 @@ import { polygonMumbai } from "wagmi/chains"
 
 import { utils } from "ethers"
 import { useEthersSigner } from "./aa/useEthersSigner.tsx"
-import { Hex } from "viem"
+import { Hex, encodeFunctionData } from "viem"
+import { FakeUSD_abi } from "aams-test/dist/abi/index"
 
 // example account 0x75a12C0550fd620388bcdD7B0c2b8133Be53dEb4
 

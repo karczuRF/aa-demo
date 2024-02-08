@@ -35,8 +35,8 @@ export const MultiOwnerSmartAccount: React.FC<MultiOwnersSmartAccountParams> = (
 
       {isAccountCreated && (
         <>
-          <GrantOwnership {...multiOwnersSmartAccountParams} />
-          <VerifySignature {...multiOwnersSmartAccountParams} />
+          {/* <GrantOwnership {...multiOwnersSmartAccountParams} /> */}
+          {/* <VerifySignature {...multiOwnersSmartAccountParams} /> */}
           <CreateSignature {...multiOwnersSmartAccountParams} />
         </>
       )}

@@ -16,7 +16,7 @@ import { useEOA } from "../../eoa/useEOA.tsx"
 
 export const CreateSignature: React.FC<MultiOwnersSmartAccountParams> = (accountParams) => {
   const { chainId } = accountParams
-  const [msg, setMsg] = useState<string>("")
+  const [msg, setMsg] = useState<string>("0xeaa808107c9907b99669254413d6144aa187887196ee07614d3590d4277b8017")
   const [sigData, setSigData] = useState<string>("")
   const [msgHash, setMsgHash] = useState<string>("")
   const [signatures, setSignatures] = useState<SignatureOutput[]>([])
@@ -33,18 +33,18 @@ export const CreateSignature: React.FC<MultiOwnersSmartAccountParams> = (account
       const pubNonces = schnorrSigners.map((sig) => sig.getPublicNonces())
       const _sig = signer.multiSignMessage(_msgHash, pubKeys, pubNonces)
       setSignatures([...signatures, _sig])
-      console.log("SIGNED!")
-      console.log("SIGNED msg hash =>>>>>>!", _msgHash)
+      console.log("[verify] SIGNED!")
+      console.log("[verify] SIGNED msg hash =>>>>>>!", _msgHash)
     }
   }
 
   const handleSummedSign = () => {
     if (signatures) {
       const _sigs: Signature[] = signatures.map((sig) => sig.signature)
-      console.log({ sumMultiSchnorrSigs })
+      console.log("[verify]", { sumMultiSchnorrSigs })
       const _summed = sumMultiSchnorrSigs(_sigs)
       setMuSig(_summed)
-      console.log("SIGNED! summed sig ====>>>>", _summed)
+      console.log("[verify] SIGNED! summed sig ====>>>>", _summed)
     }
   }
 
@@ -55,13 +55,15 @@ export const CreateSignature: React.FC<MultiOwnersSmartAccountParams> = (account
       // const _summed = sumMultiSchnorrSigs(_sigs)
       setMsgHash(msgHash)
       setSigData(sigData)
-      console.log("SIGNED! msgHash ====>>>>", msgHash)
+      console.log("[verify] SIGNED! msgHash ====>>>>", msgHash)
     }
   }
 
   const handleVerifySignature = async () => {
-    console.log("verify signature", chainId)
-    if (summedMuSig && multiOwnerSmartAccount) {
+    console.log("[verify] verify signature acc", { multiOwnerSmartAccount })
+    console.log("[verify] verify signature data", sigData)
+    console.log("[verify] verify signature hash", msgHash)
+    if (msgHash && sigData && multiOwnerSmartAccount) {
       // const pubKeys = schnorrSigners.map((sig) => sig.getPublicKey())
       // const combinedPublicKey = Schnorrkel.getCombinedPublicKey(pubKeys)
       // const px = ethers.utils.hexlify(combinedPublicKey.buffer.slice(1, 33))
@@ -75,7 +77,7 @@ export const CreateSignature: React.FC<MultiOwnersSmartAccountParams> = (account
       //   [px, e.buffer, summedMuSig.buffer, parity]
       // )
       const result = await multiOwnerSmartAccount.isValidSignature(msgHash, sigData)
-      console.log("verify signature", result)
+      console.log("[verify] verify signature result", result)
       setIsValidSig(result == ERC1271_MAGICVALUE_BYTES32)
     }
   }
