@@ -1,15 +1,11 @@
-import { useEthersSigner } from "./useEthersSigner"
 import { useMemo } from "react"
-import { Chain } from "viem"
 import { getSchnorrSigner } from "./getSchnorrSigner.ts"
-import { useMultiSigAccountSigner } from "./smartAccointSigner.ts"
+import SchnorrSigner from "aams-test/dist/utils/SchnorrSigner"
 
-export function useAccountOwner({ chainId }: { chainId: Chain["id"] }) {
-  // const signer = useEthersSigner({ chainId })
+export function useAccountOwner({ signer }: { signer: SchnorrSigner }) {
+  const owner = useMemo(() => {
+    return getSchnorrSigner(signer)
+  }, [signer])
 
-  const signer = useMemo(() => {
-    if (chainId) return getSchnorrSigner()
-  }, [chainId])
-
-  return signer
+  return owner
 }

@@ -3,12 +3,10 @@ import { useEffect, useState } from "react"
 import { useAccountSigner } from "../aa/useAccountSigner.tsx"
 import { MultiOwnersSmartAccountParams } from "./MultiOwnersSmartAccount.types.ts"
 import { usePublicEthersProvider } from "../aa/usePublicEthersProvider.tsx"
-import { ethers } from "ethers"
-import { MultiSigSmartAccount_abi } from "aams-test/dist/abi/index"
-import { MultiSigSmartAccount } from "aams-test/dist/typechain/index"
+import { MultiSigSmartAccount, MultiSigSmartAccount__factory } from "aams-test/dist/typechain/index"
 
 export function useMultiOwnerSmartAccount(multiOwnersSmartAccountParams: MultiOwnersSmartAccountParams) {
-  const { chainId, externalAccountAddress } = multiOwnersSmartAccountParams
+  const { chainId } = multiOwnersSmartAccountParams
 
   const [multiOwnerSmartAccount, setMultiOwnerSmartAccount] = useState<MultiSigSmartAccount>()
   const [isAccountCreated, setIsAccountCreated] = useState<boolean>(false)
@@ -21,33 +19,28 @@ export function useMultiOwnerSmartAccount(multiOwnersSmartAccountParams: MultiOw
   useEffect(() => {
     async function connectMultiOwnerSmartAccount() {
       const accountAddress = await accountSigner?.getAddress()
-      console.log("banan useMultiOwnerSmartAccount account address", accountAddress)
-      if (accountSigner) {
+      console.log("[create contract useMultiOwnerSmartAccount] account address", accountAddress)
+      if (accountSigner && accountAddress) {
         if (signer && accountAddress && provider) {
           const accountCode = await provider.getCode(accountAddress)
-          console.log("useMultiOwnerSmartAccount accountCode", accountCode)
+          console.log("[create contract] accountCode", accountCode)
           const isAccountCreated = accountCode.length > 2
-          console.log("banan useMultiOwnerSmartAccount isAccountCreated", isAccountCreated)
+          console.log("[create contract useMultiOwnerSmartAccount] isAccountCreated", isAccountCreated)
           setIsAccountCreated(isAccountCreated)
           if (isAccountCreated) {
-            // const multiOwnerSmartAccount = MultiSigSmartAccount__factory.connect(accountAddress)
-            const _smartAccount = new ethers.Contract(
-              "0x3183b5C72Fc2d9FaC2984c624Ff9cEeB677De98D",
-              MultiSigSmartAccount_abi,
-              accountSigner
-            ) as unknown as MultiSigSmartAccount
+            const _aaContract = MultiSigSmartAccount__factory.connect(accountAddress, accountSigner)
 
-            const nonce = await _smartAccount.getNonce()
+            const nonce = await _aaContract.getNonce()
             setNonce(nonce.toString())
-            setMultiOwnerSmartAccount(_smartAccount)
-            console.log("banan useMultiOwnerSmartAccount account set", { _smartAccount })
+            setMultiOwnerSmartAccount(_aaContract)
+            console.log("[create contract useMultiOwnerSmartAccount] account set", { _aaContract })
           }
         }
       }
     }
 
     connectMultiOwnerSmartAccount()
-  }, [accountSigner, signer, chainId, externalAccountAddress, setIsAccountCreated])
+  }, [accountSigner, chainId, setIsAccountCreated])
 
   return { multiOwnerSmartAccount, isAccountCreated, nonce }
 }

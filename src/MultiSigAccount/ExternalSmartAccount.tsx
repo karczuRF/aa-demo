@@ -3,7 +3,6 @@ import React, { useState } from "react"
 import { ConnectionParams } from "./MultiOwnersSmartAccount.types.ts"
 import { Hex } from "viem"
 import { MultiOwnerSmartAccount } from "./MultiOwnerSmartAccount.tsx"
-import { FAKE_USD_ADDRESS } from "../../utils/const.ts"
 
 export const ExternalSmartAccount: React.FC<ConnectionParams> = ({ chainId }) => {
   const [externalAccountAddress, setExternalAccountAddress] = useState<Hex | undefined>(
@@ -28,11 +27,7 @@ export const ExternalSmartAccount: React.FC<ConnectionParams> = ({ chainId }) =>
         Smart Account Address:{" "}
         <input style={{ width: "500px" }} value={externalAccountAddress} onChange={handleChangeAccountAddress} />
       </h2>
-      <MultiOwnerSmartAccount
-        address={FAKE_USD_ADDRESS}
-        externalAccountAddress={externalAccountAddress}
-        chainId={chainId}
-      />
+      <MultiOwnerSmartAccount externalAccountAddress={externalAccountAddress} chainId={chainId} />
     </div>
   )
 }

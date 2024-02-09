@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react"
+import React, { useState } from "react"
 
 import { MultiOwnersSmartAccountParams } from "../MultiOwnersSmartAccount.types.ts"
 
@@ -12,7 +12,8 @@ import Schnorrkel from "aams-test/dist/schnorrkel"
 import { useMultiOwnerSmartAccount } from "../useMultiOwnerSmartAccount.tsx"
 import { ERC1271_MAGICVALUE_BYTES32 } from "../../../utils/const.ts"
 import { Hex } from "viem"
-import { useEOA } from "../../eoa/useEOA.tsx"
+import { PublicNonces } from "aams-test/dist/types/nonce"
+import { Key } from "aams-test/dist/types/key"
 
 export const CreateSignature: React.FC<MultiOwnersSmartAccountParams> = (accountParams) => {
   const { chainId } = accountParams
@@ -22,70 +23,107 @@ export const CreateSignature: React.FC<MultiOwnersSmartAccountParams> = (account
   const [signatures, setSignatures] = useState<SignatureOutput[]>([])
   const [summedMuSig, setMuSig] = useState<Signature>()
   const schnorrSigners = useSchnorrSigners({ chainId })
-  const { isAccountCreated, multiOwnerSmartAccount } = useMultiOwnerSmartAccount(accountParams)
+  const { multiOwnerSmartAccount } = useMultiOwnerSmartAccount(accountParams)
   const [isValidSig, setIsValidSig] = useState<boolean>()
 
+  const [pubKeys, setPubKeys] = useState<Key[]>([])
+  const [nonces, setNonces] = useState<PublicNonces[]>([])
+  const [combinedPubKey, setCombinedPubKey] = useState<Key>()
+
+  const handlePkNonces = () => {
+    const pk = schnorrSigners.flatMap((sig) => sig.getPublicKey())
+    const pn = schnorrSigners.flatMap((sig) => sig.getPublicNonces())
+    const cpk = Schnorrkel.getCombinedPublicKey(pk)
+    setPubKeys(pk)
+    setNonces(pn)
+    setCombinedPubKey(cpk)
+  }
+
   const handleMultiSign = async (signer: SchnorrSigner) => {
-    if (msg && signatures.length < schnorrSigners.length) {
-      const _msgHash = ethers.utils.solidityKeccak256(["string"], [msg])
-      setMsgHash(_msgHash)
-      const pubKeys = schnorrSigners.map((sig) => sig.getPublicKey())
-      const pubNonces = schnorrSigners.map((sig) => sig.getPublicNonces())
-      const _sig = signer.multiSignMessage(_msgHash, pubKeys, pubNonces)
+    if (msg && pubKeys && nonces) {
+      const _sig = signer.multiSignMessage(msg, pubKeys, nonces)
       setSignatures([...signatures, _sig])
       console.log("[verify] SIGNED!")
-      console.log("[verify] SIGNED msg hash =>>>>>>!", _msgHash)
+    }
+  }
+  const handleSingleSign = async (signer: SchnorrSigner) => {
+    if (msg && signatures.length < schnorrSigners.length) {
+      const _sig = signer.signMessage(msg)
+      setSignatures([...signatures, _sig])
+      console.log("[verify] SIGNED SINGLE!")
+      console.log("[verify] SIGNED SINGLE msg hash =>>>>>>!", msgHash)
+      const { sigData } = await generateCombinedSigDataAndHash([signer], msg)
+      setSigData(sigData)
+      console.log("[verify] SIGNED SINGLE! msgHash ====>>>>", msgHash)
     }
   }
 
   const handleSummedSign = () => {
-    if (signatures) {
-      const _sigs: Signature[] = signatures.map((sig) => sig.signature)
+    if (signatures && combinedPubKey) {
+      const _sigs = signatures.flatMap((sig) => sig.signature)
+      // const _sigs = [signatures[0].signature, signatures[1].signature]
       console.log("[verify]", { sumMultiSchnorrSigs })
       const _summed = sumMultiSchnorrSigs(_sigs)
       setMuSig(_summed)
-      console.log("[verify] SIGNED! summed sig ====>>>>", _summed)
+      console.log("[verify] SIGNED SUMMED! summed sig ====>>>>", _summed)
+
+      // the multisig px and parity
+      // const combinedPublicKey = Schnorrkel.getCombinedPublicKey(pubKeys)
+      const px = ethers.utils.hexlify(combinedPubKey.buffer.subarray(1, 33))
+      const parity = combinedPubKey.buffer[0] - 2 + 27
+      const e = signatures[0].challenge
+
+      // wrap the result
+      const abiCoder = new ethers.utils.AbiCoder()
+      const sigData = abiCoder.encode(
+        ["bytes32", "bytes32", "bytes32", "uint8"],
+        [px, e.buffer, _summed.buffer, parity]
+      )
+
+      setSigData(sigData)
+      return { sigData, msgHash }
     }
   }
 
-  const handleGenerateCombinedSigDataAndHash = async () => {
-    if (signatures) {
-      const _sigs: Signature[] = signatures.map((sig) => sig.signature)
-      const { msgHash, sigData } = await generateCombinedSigDataAndHash(schnorrSigners, msg)
-      // const _summed = sumMultiSchnorrSigs(_sigs)
-      setMsgHash(msgHash)
-      setSigData(sigData)
-      console.log("[verify] SIGNED! msgHash ====>>>>", msgHash)
-    }
-  }
+  // const handleGenerateCombinedSigDataAndHash = async () => {
+  //   if (signatures) {
+  //     const { sigData } = await generateCombinedSigDataAndHash(schnorrSigners, msg)
+  //     // const _summed = sumMultiSchnorrSigs(_sigs)
+  //     setSigData(sigData)
+  //     console.log("[verify] SIGNED! msgHash ====>>>>", msgHash)
+  //   }
+  // }
 
   const handleVerifySignature = async () => {
     console.log("[verify] verify signature acc", { multiOwnerSmartAccount })
     console.log("[verify] verify signature data", sigData)
     console.log("[verify] verify signature hash", msgHash)
     if (msgHash && sigData && multiOwnerSmartAccount) {
-      // const pubKeys = schnorrSigners.map((sig) => sig.getPublicKey())
-      // const combinedPublicKey = Schnorrkel.getCombinedPublicKey(pubKeys)
-      // const px = ethers.utils.hexlify(combinedPublicKey.buffer.slice(1, 33))
-      // const parity = combinedPublicKey.buffer[0] - 2 + 27
-      // const e = signatures[0].challenge
-
-      // // wrap the result
-      // const abiCoder = new ethers.utils.AbiCoder()
-      // const sigData = abiCoder.encode(
-      //   ["bytes32", "bytes32", "bytes32", "uint8"],
-      //   [px, e.buffer, summedMuSig.buffer, parity]
-      // )
       const result = await multiOwnerSmartAccount.isValidSignature(msgHash, sigData)
       console.log("[verify] verify signature result", result)
       setIsValidSig(result == ERC1271_MAGICVALUE_BYTES32)
     }
   }
+  const clearData = () => {
+    setSigData("")
+    setMsgHash("")
+    setSignatures([])
+    setMuSig(undefined)
+  }
 
   return (
     <div style={{ display: "flex", flexDirection: "column", margin: "24px 0 24px 0" }}>
       <b>Type message to be signed:</b>
-      <input type="text" value={msg} onChange={(e) => setMsg(String(e.target.value))} />
+      <input
+        type="text"
+        value={msg}
+        onChange={(e) => {
+          setMsg(String(e.target.value))
+          const _msgHash = ethers.utils.solidityKeccak256(["string"], [String(e.target.value)])
+          setMsgHash(_msgHash)
+        }}
+      />
+      <button onClick={handlePkNonces}>Generate pub keys and nonces</button>
 
       <div style={{ display: "flex", flexDirection: "column" }}>
         {schnorrSigners.map((signer) => {
@@ -101,11 +139,21 @@ export const CreateSignature: React.FC<MultiOwnersSmartAccountParams> = (account
           return <text>Signature: {sig.signature.toHex()}</text>
         })}
       </div>
-      <button onClick={handleGenerateCombinedSigDataAndHash}>Generate summed signature</button>
-      <text>{summedMuSig?.toHex() as Hex}</text>
+      {/* <button onClick={handleGenerateCombinedSigDataAndHash}>Generate summed signature</button> */}
+      <text>Msg hash: {msgHash}</text>
+      <text>
+        Pub keys: {pubKeys ? pubKeys[0]?.toHex() : ""} {pubKeys ? pubKeys[1]?.toHex() : ""}
+      </text>
+      <text>
+        P nonces: {nonces ? nonces[0]?.kPublic?.toHex() : ""} {nonces ? nonces[1]?.kPublic?.toHex() : ""}
+      </text>
+      <text>Sig data: {sigData}</text>
+      <text>SummedSi: {summedMuSig?.toHex() as Hex}</text>
+      <button onClick={handleSummedSign}>Handle Summed Sig</button>
 
       <button onClick={handleVerifySignature}>Verify Signature</button>
       <h4 style={{ color: isValidSig ? "green" : "red" }}>Is Valid? {isValidSig ? "yes" : "no"}</h4>
+      <button onClick={clearData}>Clear data</button>
     </div>
   )
 }

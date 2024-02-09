@@ -12,42 +12,44 @@ import { Chain, Hex } from "viem"
 import { MultiSigAccountAbstraction } from "../account-abstraction/MultiSigAccountAbstraction.tsx"
 import { useEffect, useState } from "react"
 import { ENTRYPOINT_ADDRESS, MUSIG_ACCOUNT_FACTORY_ADDRESS } from "../../utils/const.ts"
-import { useAlchemy } from "./useAlchemy.ts"
-import { usePublicEthersProvider } from "./usePublicEthersProvider.tsx"
-import { providers, utils } from "ethers"
-import { hexlify } from "ethers/lib/utils"
+import { useAlchemyProvider } from "./useAlchemyProvider.ts"
+import { utils } from "ethers"
+import { useSchnorrSigners } from "./useSchnorrSigners.tsx"
 
 export function useAccountSigner({
   chainId,
   externalAccountAddress,
+  accountIndex,
 }: {
   chainId: Chain["id"]
   externalAccountAddress?: Hex
+  accountIndex?: number
 }) {
   const [accountSigner, setAccountSigner] = useState<AccountSigner<MultiSigAccountAbstraction> | undefined>()
   const [accountOwner, setAccountOwner] = useState<string | undefined>()
-  const _schnorrSigner = useAccountOwner({ chainId })
+  const _signer = useSchnorrSigners({ chainId })[accountIndex ?? 0]
+  const _ownerSchnorrAccount = useAccountOwner({ signer: _signer })
   const chain = getChain(chainId)
   // const publicProvider = usePublicEthersProvider({ chainId }) as providers.JsonRpcProvider
-  const publicProvider = useAlchemy(chain)
+  const publicProvider = useAlchemyProvider(chain)
   console.log("===> [useAccountSigner] externalAccountAddress", externalAccountAddress)
   useEffect(() => {
     async function getAccountSigner() {
-      console.log("===> [useAccountSigner] schnorr", { _schnorrSigner }, await _schnorrSigner?.getAddress())
-      if (publicProvider && _schnorrSigner && externalAccountAddress) {
+      console.log("===> [useAccountSigner] schnorr", { _ownerSchnorrAccount }, _ownerSchnorrAccount?.getAddress())
+      if (publicProvider && _ownerSchnorrAccount && externalAccountAddress) {
         const accountProvider = EthersProviderAdapter.fromEthersProvider(publicProvider)
         //     .withPaymasterMiddleware({
         //     dummyPaymasterDataMiddleware: async () => { return { paymasterAndData: WHITELIST_PAYMASTER } },
         //     paymasterDataMiddleware: async () => { return { paymasterAndData: WHITELIST_PAYMASTER } },
         // })
-        const code = await publicProvider.getCode("0x9Dde9844c099678aFc143e4d094D190D2B08bdD9")
+        const code = await publicProvider.getCode(externalAccountAddress)
         console.log("DUPA", code)
         const accountSigner = accountProvider.connectToAccount((rpcClient) => {
           const smartAccount = new MultiSigAccountAbstraction({
             entryPointAddress: ENTRYPOINT_ADDRESS,
             chain,
-            accountAddress: "0x9Dde9844c099678aFc143e4d094D190D2B08bdD9",
-            owner: _schnorrSigner,
+            accountAddress: externalAccountAddress,
+            owner: _ownerSchnorrAccount,
             factoryAddress: MUSIG_ACCOUNT_FACTORY_ADDRESS,
             rpcClient,
             combinedPubKeys: [
@@ -83,11 +85,11 @@ export function useAccountSigner({
           await accountSigner.getAddress()
         )
         setAccountSigner(accountSigner)
-        setAccountOwner(await _schnorrSigner.getAddress())
+        setAccountOwner(await _ownerSchnorrAccount.getAddress())
       }
     }
     getAccountSigner()
-  }, [publicProvider, _schnorrSigner, chainId, externalAccountAddress])
+  }, [publicProvider, _ownerSchnorrAccount, chainId, externalAccountAddress])
 
   console.log("===> [useAccountSigner] accountSigner owner", accountOwner)
   console.log("===> [useAccountSigner] accountSigner", accountSigner)

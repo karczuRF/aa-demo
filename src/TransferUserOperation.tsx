@@ -7,32 +7,23 @@ import { BigNumber, utils } from "ethers"
 import { useAccountSigner } from "./aa/useAccountSigner.tsx"
 import { useMultiOwnerSmartAccount } from "./MultiSigAccount/useMultiOwnerSmartAccount.tsx"
 import { UserOperationsERC20Params } from "./UserOperationsERC20.types.ts"
-import { FAKE_USD_ADDRESS } from "../utils/const.ts"
-import { useEOA } from "./eoa/useEOA.tsx"
-import { Hex, encodeFunctionData, parseUnits } from "viem"
-import { ERC20_abi, FakeUSD_abi } from "aams-test/dist/abi/index"
-
-import { UserOperationCallData, getChain } from "@alchemy/aa-core"
+import { Hex, parseUnits } from "viem"
 
 export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
   toAddress,
-  address: erc20Address,
+  address,
   ...accountParams
 }) => {
-  const _chain = getChain(accountParams.chainId)
   const [amount, setAmount] = useState<string>("0")
   const [txData, setTxData] = useState<string>("")
-  const { erc20, decimals } = useERC20({ address: erc20Address, chainId: accountParams.chainId })
+  const { erc20, decimals } = useERC20({ address, chainId: accountParams.chainId })
   // const accountSigner = useAccountOwner({ chainId: accountParams.chainId })
-  // const _provider = useAlchemy(_chain)
+  // const _provider = useAlchemyProvider(_chain)
   const accountSigner = useAccountSigner({
     chainId: accountParams.chainId,
-    externalAccountAddress: "0x3183b5C72Fc2d9FaC2984c624Ff9cEeB677De98D",
+    externalAccountAddress: "0x9Dde9844c099678aFc143e4d094D190D2B08bdD9",
   })
-  const { address: EOA } = useEOA(accountParams)
   const { multiOwnerSmartAccount: smartAccount, nonce } = useMultiOwnerSmartAccount({
-    address: erc20Address,
-    externalAccountAddress: "0x3183b5C72Fc2d9FaC2984c624Ff9cEeB677De98D",
     chainId: accountParams.chainId,
   })
 
@@ -44,10 +35,7 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
     // const _client = await getWalletClient({ chainId: accountParams.chainId })
     console.log("===> [TransferUserOperation] fakeUSD", erc20)
     console.log("===> [TransferUserOperation] accountSigner", accountSigner)
-    console.log("===> [TransferUserOperation] accountSigner", await accountSigner?.getAddress())
     if (erc20 && decimals && accountSigner) {
-      console.log("===> [TransferUserOperation] eoa", EOA)
-
       const _am = parseUnits(amount, decimals)
       // const amountBN = BigNumber.from(amount).mul(BigNumber.from(10).pow(decimals)).toBigInt()
 
