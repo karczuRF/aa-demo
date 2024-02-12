@@ -50,6 +50,10 @@ const _multiSig = (schnorrSigners: SchnorrSigner[], msg: Uint8Array | Hex | stri
   return _sig
 }
 
+// msg as Hex to transfer eth to eo
+// (tx hash: 0x08a132b6c7efd5744120234c21a6bde731107d04cd33358b72a241ecd675e083)
+// 0x6feffe4abbb5058841ec00c249ca186494f95e64fd69b60888cfa8bffa21f151
+
 export function getSchnorrSigner(signer: SchnorrSigner): SmartAccountSigner {
   return {
     signerType: "schnorr",
@@ -61,6 +65,7 @@ export function getSchnorrSigner(signer: SchnorrSigner): SmartAccountSigner {
       console.log("SCHNORR SIGNATURE msg", utils.hexlify(msg))
       console.log("SCHNORR SIGNATURE signature", utils.hexlify(sig.signature.buffer))
       return utils.hexlify(sig.signature.buffer) as Hex
+      // return "0xc869ee9503b49c80d96b3be05a50893a11d37bc12f0af0514883ff85dd224e20388b4dbd0ced3428e175821fca5f0bd48229bc34326adf5446d93cd884c0245e2fa6c7e0a7ab693d675a89f52f85d417d36b018eff4cf04a71d5f449f7824cf2000000000000000000000000000000000000000000000000000000000000001c" as Hex
     },
     signTypedData: async (params: SignTypedDataParams) => {
       return fixSignedData("0x" as Hex)

@@ -6,7 +6,7 @@ import { MultiOwnerSmartAccount } from "./MultiOwnerSmartAccount.tsx"
 
 export const ExternalSmartAccount: React.FC<ConnectionParams> = ({ chainId }) => {
   const [externalAccountAddress, setExternalAccountAddress] = useState<Hex | undefined>(
-    "0x9Dde9844c099678aFc143e4d094D190D2B08bdD9"
+    "0xBbFf50974d9DF31cb4CeB41026cC041cbe4F8FD0"
   )
 
   const handleChangeAccountAddress = (event: React.ChangeEvent<HTMLInputElement>) => {

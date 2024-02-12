@@ -5,7 +5,7 @@ import { Hex } from "viem"
 import { CreateSmartAccount } from "./CreateSmartAccount.tsx"
 
 export const SmartAccountFactory: React.FC<ConnectionParams> = ({ chainId }) => {
-  const [factoryAddress, setFactoryAddress] = useState<Hex | undefined>("0xcB2e8b852E903A6e6Ed3913A8357f7225d95baf9")
+  const [factoryAddress, setFactoryAddress] = useState<Hex | undefined>("0xb81F36fa5b50E607AA25BCb3133e715d8513e4C0")
 
   const handleChangeAccountAddress = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value
@@ -23,7 +23,7 @@ export const SmartAccountFactory: React.FC<ConnectionParams> = ({ chainId }) => 
     <div style={{ margin: "24px", padding: "12px" }}>
       <h2>
         Smart Account Factory:{" "}
-        <input style={{ width: "500px" }} value={factoryAddress} onChange={handleChangeAccountAddress} />
+        <input type="text" style={{ width: "500px" }} value={factoryAddress} onChange={handleChangeAccountAddress} />
       </h2>
       <>
         <CreateSmartAccount chainId={chainId} factoryAddress={factoryAddress} />

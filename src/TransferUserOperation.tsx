@@ -7,7 +7,8 @@ import { BigNumber, utils } from "ethers"
 import { useAccountSigner } from "./aa/useAccountSigner.tsx"
 import { useMultiOwnerSmartAccount } from "./MultiSigAccount/useMultiOwnerSmartAccount.tsx"
 import { UserOperationsERC20Params } from "./UserOperationsERC20.types.ts"
-import { Hex, parseUnits } from "viem"
+import { Hex, parseEther, parseUnits } from "viem"
+import { SMART_ACCOUNT_ADDRESS } from "../utils/const.ts"
 
 export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
   toAddress,
@@ -21,7 +22,7 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
   // const _provider = useAlchemyProvider(_chain)
   const accountSigner = useAccountSigner({
     chainId: accountParams.chainId,
-    externalAccountAddress: "0x9Dde9844c099678aFc143e4d094D190D2B08bdD9",
+    externalAccountAddress: SMART_ACCOUNT_ADDRESS as Hex,
   })
   const { multiOwnerSmartAccount: smartAccount, nonce } = useMultiOwnerSmartAccount({
     chainId: accountParams.chainId,
@@ -36,7 +37,7 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
     console.log("===> [TransferUserOperation] fakeUSD", erc20)
     console.log("===> [TransferUserOperation] accountSigner", accountSigner)
     if (erc20 && decimals && accountSigner) {
-      const _am = parseUnits(amount, decimals)
+      const _am = parseEther(amount)
       // const amountBN = BigNumber.from(amount).mul(BigNumber.from(10).pow(decimals)).toBigInt()
 
       // const transferData = erc20.interface.encodeFunctionData("transferFrom", [EOA, toAddress, amountBN]) as Hex
