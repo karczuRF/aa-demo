@@ -7,17 +7,20 @@ import { createSchnorrSigner } from "aams-test/dist/utils/schnorr-helpers"
 import { hexToBytes } from "viem"
 
 export function useSchnorrSigners({ chainId }: ConnectionParams) {
-  const signer = useEthersSigner({ chainId })
+  // const signer = useEthersSigner({ chainId })
   const [schnorrSigners, setSchnorrSigners] = useState<SchnorrSigner[]>([])
-
+  const pk1 = import.meta.env.VITE_SIGNER_PRIVATE_KEY
+  const pk2 = import.meta.env.VITE_SIGNER2_PRIVATE_KEY
   useEffect(() => {
-    if (signer) {
-      const signer1 = createSchnorrSigner(hexToBytes(import.meta.env.VITE_SIGNER_PRIVATE_KEY))
-      const signer2 = createSchnorrSigner(hexToBytes(import.meta.env.VITE_SIGNER2_PRIVATE_KEY))
+    function getSigners() {
+      console.log("[musigtx] create signers")
+      const signer1 = createSchnorrSigner(hexToBytes(pk1))
+      const signer2 = createSchnorrSigner(hexToBytes(pk2))
 
       setSchnorrSigners([signer1, signer2])
     }
-  }, [signer, chainId])
+    getSigners()
+  }, [chainId, pk1, pk2])
 
   return schnorrSigners
 }

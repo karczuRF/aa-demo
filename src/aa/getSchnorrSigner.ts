@@ -73,22 +73,21 @@ export function getSchnorrSigner(signer: SchnorrSigner): SmartAccountSigner {
   }
 }
 
-export function getSchnorrMultiSigner(signer: SchnorrSigner): SmartAccountSigner {
-  return {
-    signerType: "schnorr",
-    inner: signer,
-    getAddress: async () => Promise.resolve(signer.getAddress() as `0x${string}`),
-    signMessage: async (msg: Uint8Array | Hex | string) => {
-      const _summed = "0xc1c8944d4b08e292ed0e25b6893633044d375d5a03c8a1e6c728bbf635825987"
-      const sig = signer.signMessage(msg.toString())
-      console.log("SCHNORR SIGNATURE", { sig })
-      console.log("SCHNORR SIGNATURE msg", utils.hexlify(msg))
-      console.log("SCHNORR SIGNATURE signature", utils.hexlify(sig.signature.buffer))
-      return utils.hexlify(sig.signature.buffer) as Hex
-      // return "0xc869ee9503b49c80d96b3be05a50893a11d37bc12f0af0514883ff85dd224e20388b4dbd0ced3428e175821fca5f0bd48229bc34326adf5446d93cd884c0245e2fa6c7e0a7ab693d675a89f52f85d417d36b018eff4cf04a71d5f449f7824cf2000000000000000000000000000000000000000000000000000000000000001c" as Hex
-    },
-    signTypedData: async (params: SignTypedDataParams) => {
-      return fixSignedData("0x" as Hex)
-    },
-  }
-}
+// export function getSchnorrSignerTx(signer: SchnorrSigner, muSigTx: MultiSigSchnorrTx): SmartAccountSigner {
+//   return {
+//     signerType: "schnorr",
+//     inner: signer,
+//     getAddress: async () => Promise.resolve(signer.getAddress() as `0x${string}`),
+//     signMessage: async (msg: Uint8Array | Hex | string) => {
+//       const sigData = muSigTx.getMultiSign() ?? "0x"
+
+//       console.log("SCHNORR SIGNATURE", { sigData })
+//       console.log("SCHNORR SIGNATURE msg", utils.hexlify(sigData))
+//       // return utils.hexlify(sig.signature.buffer) as Hex
+//       return sigData as Hex
+//     },
+//     signTypedData: async (params: SignTypedDataParams) => {
+//       return fixSignedData("0x" as Hex)
+//     },
+//   }
+// }

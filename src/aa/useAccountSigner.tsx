@@ -35,8 +35,8 @@ export function useAccountSigner({
   console.log("===> [useAccountSigner] externalAccountAddress", externalAccountAddress)
   useEffect(() => {
     async function getAccountSigner() {
-      console.log("===> [useAccountSigner] schnorr", { _ownerSchnorrAccount }, _ownerSchnorrAccount?.getAddress())
       if (publicProvider && _ownerSchnorrAccount && externalAccountAddress) {
+        console.log("===> [useAccountSigner] schnorr", { _ownerSchnorrAccount }, _ownerSchnorrAccount?.getAddress())
         const accountProvider = EthersProviderAdapter.fromEthersProvider(publicProvider)
         //     .withPaymasterMiddleware({
         //     dummyPaymasterDataMiddleware: async () => { return { paymasterAndData: WHITELIST_PAYMASTER } },

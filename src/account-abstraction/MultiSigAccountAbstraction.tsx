@@ -64,6 +64,8 @@ export class MultiSigAccountAbstraction<
       msg = new TextEncoder().encode(msg)
     }
 
+    console.log("SIGN MSG MSAA", msg)
+
     return this.owner.signMessage(msg)
   }
 
