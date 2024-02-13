@@ -14,6 +14,7 @@ import { ERC1271_MAGICVALUE_BYTES32 } from "../../../utils/const.ts"
 import { Hex } from "viem"
 import { PublicNonces } from "aams-test/dist/types/nonce"
 import { Key } from "aams-test/dist/types/key"
+import { useMultiSigTx } from "../../aa/useMultiSigTx.tsx"
 
 export const CreateSignature: React.FC<MultiOwnersSmartAccountParams> = (accountParams) => {
   const { chainId } = accountParams
@@ -22,13 +23,15 @@ export const CreateSignature: React.FC<MultiOwnersSmartAccountParams> = (account
   const [msgHash, setMsgHash] = useState<string>("")
   const [signatures, setSignatures] = useState<SignatureOutput[]>([])
   const [summedMuSig, setMuSig] = useState<Signature>()
-  const schnorrSigners = useSchnorrSigners({ chainId })
   const { multiOwnerSmartAccount } = useMultiOwnerSmartAccount(accountParams)
   const [isValidSig, setIsValidSig] = useState<boolean>()
 
   const [pubKeys, setPubKeys] = useState<Key[]>([])
   const [nonces, setNonces] = useState<PublicNonces[]>([])
   const [combinedPubKey, setCombinedPubKey] = useState<Key>()
+
+  const schnorrSigners = useSchnorrSigners({ chainId })
+  const muSigTx = useMultiSigTx({ signers: schnorrSigners })
 
   const handlePkNonces = () => {
     const pk = schnorrSigners.flatMap((sig) => sig.getPublicKey())
@@ -65,7 +68,7 @@ export const CreateSignature: React.FC<MultiOwnersSmartAccountParams> = (account
       console.log("[verify]", { sumMultiSchnorrSigs })
       const _summed = sumMultiSchnorrSigs(_sigs)
       setMuSig(_summed)
-      console.log("[verify] SIGNED SUMMED! summed sig ====>>>>", _summed)
+      console.log("[verify] SIGNED SUMMED! summed sig ====>>>>", _summed.toHex())
 
       // the multisig px and parity
       // const combinedPublicKey = Schnorrkel.getCombinedPublicKey(pubKeys)
