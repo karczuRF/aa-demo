@@ -1,5 +1,5 @@
 import Schnorrkel from "aams-test/dist/schnorrkel"
-import { Key, PublicNonces, SignatureOutput } from "aams-test/dist/types"
+import { Challenge, Key, PublicNonces, Signature, SignatureOutput } from "aams-test/dist/types"
 import SchnorrSigner from "aams-test/dist/utils/SchnorrSigner"
 import { sumMultiSchnorrSigs } from "aams-test/dist/utils/schnorr-helpers"
 import { ethers } from "ethers"
@@ -19,15 +19,16 @@ export type MuSigSignersPubKeys = {
 
 export default class MultiSigSchnorrTx {
   readonly signers: SchnorrSigner[]
-  nonces: MuSigSignersNonces = {}
-  publicKeys: MuSigSignersPubKeys = {}
-  signatures: MuSigSingleSigns = {}
+  // nonces: MuSigSignersNonces = {}
+  // publicKeys: MuSigSignersPubKeys = {}
+  // signatures: MuSigSingleSigns = {}
   combinedPubKey?: Key
   msg: string = ""
   pubKeys: Key[] = []
   pubNonces: PublicNonces[] = []
   opHash: Hex = "0x"
   isInitialized: boolean = false
+  signatures: SignatureOutput[] = []
 
   constructor(signers: SchnorrSigner[], opHash: Hex) {
     console.log("[musigtx] create tx", this.isInitialized, { signers })
@@ -42,9 +43,11 @@ export default class MultiSigSchnorrTx {
       // this.nonces[_signerAddress] = sig.getPublicNonces()
       // this.publicKeys[_signerAddress] = sig.getPublicKey()
     })
-    this.pubKeys = signers.flatMap((sig) => sig.getPublicKey())
-    this.pubNonces = signers.flatMap((sig) => sig.getPublicNonces())
-    this.combinedPubKey = Schnorrkel.getCombinedPublicKey(this.pubKeys)
+    const publicKeys: Key[] = signers.map((signer) => signer.getPublicKey())
+    const publicNonces: PublicNonces[] = signers.map((signer) => signer.getPublicNonces())
+    this.pubKeys = publicKeys
+    this.pubNonces = publicNonces
+    this.combinedPubKey = Schnorrkel.getCombinedPublicKey(publicKeys)
     this.opHash = opHash
     console.log("[musigtx] create pn", this.pubNonces)
     this.isInitialized = true
@@ -54,15 +57,34 @@ export default class MultiSigSchnorrTx {
     this.msg = msg
   }
 
+  setOpHash(hash: Hex) {
+    this.opHash = hash
+  }
+
   getMsg(): string {
     return this.msg
   }
 
   singleSignMessage(signer: SchnorrSigner) {
     console.log("[musigtx] single sign nonces", this.msg, this.pubKeys, this.pubNonces)
-    const _sig = signer.multiSignMessage(this.opHash, this.pubKeys, this.pubNonces)
-    this.signatures[signer.getAddress()] = _sig
+    const op = this.opHash
+    const pk = this.pubKeys
+    const pn = this.pubNonces
+    const _sig = signer.multiSignMessage(op, pk, pn)
+    this.signatures.push(_sig)
     console.log("[musigtx] single sign done", _sig)
+    return _sig
+  }
+
+  singleSignHash(signer: SchnorrSigner) {
+    console.log("[musigtx] single sign nonces", this.msg, this.pubKeys, this.pubNonces)
+    const op = this.opHash
+    const pk = this.pubKeys
+    const pn = this.pubNonces
+    const _sig = signer.multiSignHash(op, pk, pn)
+    this.signatures.push(_sig)
+    console.log("[musigtx] single sign done hash", _sig)
+    return _sig
   }
 
   // setSingleSign(signer: SchnorrSigner, signature: SignatureOutput) {
@@ -72,40 +94,36 @@ export default class MultiSigSchnorrTx {
   //   this.signatures[_signer] = signature
   // }
 
-  getSingleSignature(signer: SchnorrSigner): SignatureOutput {
-    return this.signatures[signer.getAddress()]
-  }
+  // getSingleSignature(signer: SchnorrSigner): SignatureOutput {
+  //   return this.signatures[signer.getAddress()]
+  // }
 
-  getPubNonces(): PublicNonces[] {
-    return Object.entries(this.nonces).map(([, nonce]) => {
-      return nonce
-    })
-  }
+  // getPubNonces(): PublicNonces[] {
+  //   return Object.entries(this.nonces).map(([, nonce]) => {
+  //     return nonce
+  //   })
+  // }
 
-  getPublicKeys(): Key[] {
-    return Object.entries(this.publicKeys).map(([, pk]) => {
-      return pk
-    })
-  }
+  // getPublicKeys(): Key[] {
+  //   return Object.entries(this.publicKeys).map(([, pk]) => {
+  //     return pk
+  //   })
+  // }
 
   getMultiSign() {
     console.log("[musigtx] get multi sign")
     if (!this.combinedPubKey || !this.signatures || this.signers.length < 2) return
-
-    const _sigs = Object.entries(this.signatures).map(([, sig]) => {
-      return sig.signature
-    })
+    const _sigs: Signature[] = this.signatures.map((sig) => sig.signature)
+    const challenges: Challenge[] = this.signatures.map((sig) => sig.challenge)
+    console.log("[musigtx] get multi sign array", _sigs)
     const _summed = sumMultiSchnorrSigs(_sigs)
 
     // the multisig px and parity
     const px = ethers.utils.hexlify(this.combinedPubKey.buffer.subarray(1, 33))
     const parity = this.combinedPubKey.buffer[0] - 2 + 27
 
-    const _challenges = Object.entries(this.signatures).map(([, sig]) => {
-      return sig.challenge
-    })
     // challenge for every signature has to be the same, so pick first one
-    const e = _challenges[0]
+    const e = challenges[0]
 
     // wrap the result
     const abiCoder = new ethers.utils.AbiCoder()

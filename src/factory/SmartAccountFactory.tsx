@@ -3,9 +3,10 @@ import React, { useState } from "react"
 import { ConnectionParams } from "../MultiSigAccount/MultiOwnersSmartAccount.types.ts"
 import { Hex } from "viem"
 import { CreateSmartAccount } from "./CreateSmartAccount.tsx"
+import { MUSIG_ACCOUNT_FACTORY_ADDRESS } from "../../utils/const.ts"
 
 export const SmartAccountFactory: React.FC<ConnectionParams> = ({ chainId }) => {
-  const [factoryAddress, setFactoryAddress] = useState<Hex | undefined>("0xb81F36fa5b50E607AA25BCb3133e715d8513e4C0")
+  const [factoryAddress, setFactoryAddress] = useState<Hex | undefined>(MUSIG_ACCOUNT_FACTORY_ADDRESS)
 
   const handleChangeAccountAddress = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value

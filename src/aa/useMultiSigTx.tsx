@@ -7,6 +7,7 @@ export function useMultiSigTx({ signers, opHash }: { signers: SchnorrSigner[]; o
   const [multiSigTx, setMultiSigTx] = useState<MultiSigSchnorrTx>()
 
   useEffect(() => {
+    console.log("return musig tx useeffect", multiSigTx?.isInitialized)
     function getMultiSigTx() {
       if (signers.length > 1) {
         const tx = new MultiSigSchnorrTx(signers, opHash)
@@ -16,6 +17,6 @@ export function useMultiSigTx({ signers, opHash }: { signers: SchnorrSigner[]; o
     getMultiSigTx()
   }, [signers, opHash])
 
-  console.log("return musig tx", multiSigTx)
+  console.log("return musig tx", multiSigTx?.isInitialized)
   return multiSigTx
 }

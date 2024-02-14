@@ -8,13 +8,13 @@ import {
 } from "@alchemy/aa-ethers"
 import { useAccountOwner } from "./useAccountOwner.tsx"
 import { Chain, Hex } from "viem"
-// import {WHITELIST_PAYMASTER} from "./constants.ts";
 import { MultiSigAccountAbstraction } from "../account-abstraction/MultiSigAccountAbstraction.tsx"
 import { useEffect, useState } from "react"
 import { ENTRYPOINT_ADDRESS, MUSIG_ACCOUNT_FACTORY_ADDRESS } from "../../utils/const.ts"
 import { useAlchemyProvider } from "./useAlchemyProvider.ts"
-import { utils } from "ethers"
+import { providers, utils } from "ethers"
 import { useSchnorrSigners } from "./useSchnorrSigners.tsx"
+import { usePublicEthersProvider } from "./usePublicEthersProvider.tsx"
 
 export function useAccountSigner({
   chainId,
@@ -30,20 +30,15 @@ export function useAccountSigner({
   const _signer = useSchnorrSigners({ chainId })[accountIndex ?? 0]
   const _ownerSchnorrAccount = useAccountOwner({ signer: _signer })
   const chain = getChain(chainId)
-  // const publicProvider = usePublicEthersProvider({ chainId }) as providers.JsonRpcProvider
-  const publicProvider = useAlchemyProvider(chain)
-  console.log("===> [useAccountSigner] externalAccountAddress", externalAccountAddress)
+  const publicProvider = usePublicEthersProvider({ chainId }) as providers.JsonRpcProvider
+  // const publicProvider = useAlchemyProvider(chain)
+  // console.log("===> [useAccountSigner] externalAccountAddress", externalAccountAddress)
   useEffect(() => {
     async function getAccountSigner() {
       if (publicProvider && _ownerSchnorrAccount && externalAccountAddress) {
-        console.log("===> [useAccountSigner] schnorr", { _ownerSchnorrAccount }, _ownerSchnorrAccount?.getAddress())
+        // console.log("===> [useAccountSigner] schnorr", { _ownerSchnorrAccount }, _ownerSchnorrAccount?.getAddress())
         const accountProvider = EthersProviderAdapter.fromEthersProvider(publicProvider)
-        //     .withPaymasterMiddleware({
-        //     dummyPaymasterDataMiddleware: async () => { return { paymasterAndData: WHITELIST_PAYMASTER } },
-        //     paymasterDataMiddleware: async () => { return { paymasterAndData: WHITELIST_PAYMASTER } },
-        // })
-        const code = await publicProvider.getCode(externalAccountAddress)
-        console.log("DUPA", code)
+
         const accountSigner = accountProvider.connectToAccount((rpcClient) => {
           const smartAccount = new MultiSigAccountAbstraction({
             entryPointAddress: ENTRYPOINT_ADDRESS,
@@ -79,11 +74,11 @@ export function useAccountSigner({
         //     // maxPriorityFeePerGas: Promise.resolve(utils.parseUnits("200", "gwei").toHexString() as Hex),
         //   })
         // })
-        console.log(
-          "===> [useAccountSigner] accountSigner smart account",
-          { accountSigner },
-          await accountSigner.getAddress()
-        )
+        // console.log(
+        //   "===> [useAccountSigner] accountSigner smart account",
+        //   { accountSigner },
+        //   await accountSigner.getAddress()
+        // )
         setAccountSigner(accountSigner)
         setAccountOwner(await _ownerSchnorrAccount.getAddress())
       }
@@ -91,7 +86,7 @@ export function useAccountSigner({
     getAccountSigner()
   }, [publicProvider, _ownerSchnorrAccount, chainId, externalAccountAddress])
 
-  console.log("===> [useAccountSigner] accountSigner owner", accountOwner)
+  // console.log("===> [useAccountSigner] accountSigner owner", accountOwner)
   console.log("===> [useAccountSigner] accountSigner", accountSigner)
   return accountSigner
 }

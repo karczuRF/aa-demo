@@ -15,6 +15,7 @@ import { Hex } from "viem"
 import { PublicNonces } from "aams-test/dist/types/nonce"
 import { Key } from "aams-test/dist/types/key"
 import { useMultiSigTx } from "../../aa/useMultiSigTx.tsx"
+import MultiSigSchnorrTx from "../../account-abstraction/MultiSigSchnorrTx.ts"
 
 export const CreateSignature: React.FC<MultiOwnersSmartAccountParams> = (accountParams) => {
   const { chainId } = accountParams
@@ -25,21 +26,24 @@ export const CreateSignature: React.FC<MultiOwnersSmartAccountParams> = (account
   const [summedMuSig, setMuSig] = useState<Signature>()
   const { multiOwnerSmartAccount } = useMultiOwnerSmartAccount(accountParams)
   const [isValidSig, setIsValidSig] = useState<boolean>()
+  const [muSigTx, setMultiSigTx] = useState<MultiSigSchnorrTx>()
 
-  const [pubKeys, setPubKeys] = useState<Key[]>([])
-  const [nonces, setNonces] = useState<PublicNonces[]>([])
-  const [combinedPubKey, setCombinedPubKey] = useState<Key>()
+  // const [pubKeys, setPubKeys] = useState<Key[]>([])
+  // const [nonces, setNonces] = useState<PublicNonces[]>([])
+  // const [combinedPubKey, setCombinedPubKey] = useState<Key>()
 
   const schnorrSigners = useSchnorrSigners({ chainId })
-  const muSigTx = useMultiSigTx({ signers: schnorrSigners, opHash: msgHash as Hex })
+  // const muSigTx = useMultiSigTx({ signers: schnorrSigners, opHash: msgHash as Hex })
 
   const handlePkNonces = () => {
     const pk = schnorrSigners.flatMap((sig) => sig.getPublicKey())
     const pn = schnorrSigners.flatMap((sig) => sig.getPublicNonces())
     const cpk = Schnorrkel.getCombinedPublicKey(pk)
-    setPubKeys(pk)
-    setNonces(pn)
-    setCombinedPubKey(cpk)
+    const tx = new MultiSigSchnorrTx(schnorrSigners, msgHash as Hex)
+    setMultiSigTx(tx)
+    // setPubKeys(pk)
+    // setNonces(pn)
+    // setCombinedPubKey(cpk)
     console.log("cpk===>", { schnorrSigners })
     console.log("cpk===>", { pk }, { pn }, { cpk })
   }
@@ -58,7 +62,7 @@ export const CreateSignature: React.FC<MultiOwnersSmartAccountParams> = (account
     if (msg && muSigTx && signer) {
       muSigTx.setMsg(msg)
       // const _sig = signer.multiSignMessage(msg, pubKeys, nonces)
-      const _sig = muSigTx.singleSignMessage(signer)
+      const _sig = muSigTx.singleSignHash(signer)
       // muSigTx.setSingleSign(signer, _sig)
       console.log("[musigtx] handle sign sig ====>>>>", _sig)
     }
