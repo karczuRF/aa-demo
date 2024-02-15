@@ -2,7 +2,8 @@ import React, { useState } from "react"
 import { Hex } from "viem"
 import { MultiOwnersSmartAccountParams } from "./account-abstraction/MultiSigAccountAbstraction.types.ts"
 import { TransferUserOperation } from "./TransferUserOperation.tsx"
-import { FAKE_USD_ADDRESS } from "../utils/const.ts"
+import { FAKE_USD_ADDRESS, SMART_ACCOUNT_ADDRESS } from "../utils/const.ts"
+import { Balance } from "./Balance.tsx"
 
 export const UserOperationsERC20: React.FC<MultiOwnersSmartAccountParams> = ({ ...accountParams }) => {
   const [toAddress, setToAddress] = useState<Hex | undefined>("0x75a12C0550fd620388bcdD7B0c2b8133Be53dEb4")
@@ -24,6 +25,9 @@ export const UserOperationsERC20: React.FC<MultiOwnersSmartAccountParams> = ({ .
   return (
     <div style={{ margin: "48px", padding: "12px", border: "1px solid black" }}>
       <h3 style={{ color: "yellow" }}>User Operations ERC20</h3>
+      <Balance address={erc20Address} account={SMART_ACCOUNT_ADDRESS} {...accountParams} />
+      <Balance address={erc20Address} account={toAddress} {...accountParams} />
+
       <h2>
         To address: <input style={{ width: "500px" }} value={toAddress} onChange={handleChangeAddress} />
       </h2>

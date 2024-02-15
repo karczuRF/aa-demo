@@ -7,11 +7,12 @@ import { BigNumber, utils } from "ethers"
 import { useAccountSigner } from "./aa/useAccountSigner.tsx"
 import { useMultiOwnerSmartAccount } from "./MultiSigAccount/useMultiOwnerSmartAccount.tsx"
 import { UserOperationsERC20Params } from "./UserOperationsERC20.types.ts"
-import { Hex, parseEther, parseUnits } from "viem"
+import { Hex, encodeFunctionData, parseEther, parseUnits } from "viem"
 import { SMART_ACCOUNT_ADDRESS } from "../utils/const.ts"
 import { useMultiSigTx } from "./aa/useMultiSigTx.tsx"
 import { useSchnorrSigners } from "./aa/useSchnorrSigners.tsx"
 import {
+  UserOperationCallData,
   UserOperationRequest,
   UserOperationStruct,
   deepHexlify,
@@ -20,6 +21,7 @@ import {
 } from "@alchemy/aa-core"
 import SchnorrSigner from "aams-test/dist/utils/SchnorrSigner"
 import MultiSigSchnorrTx from "./account-abstraction/MultiSigSchnorrTx.ts"
+import { ERC20_abi } from "aams-test/dist/abi/index"
 // import { UserOperationStruct } from "aams-test/dist/typechain/contracts/MultiSigSmartAccount"
 
 export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
@@ -64,8 +66,8 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
 
   const handleGenerateOpHash = async () => {
     console.log("===> [TransferUserOperation] accountSigner", accountSigner)
-    if (accountSigner) {
-      const _am = parseEther(amount)
+    if (accountSigner && decimals) {
+      const _am = parseUnits(amount, decimals)
       const aaSignerWithMiddle = accountSigner.withGasEstimator(async (userOperation) => {
         return Promise.resolve({
           ...userOperation,
@@ -78,11 +80,14 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
       })
 
       const provider = accountSigner.provider.accountProvider
-      const uoStruct = await provider.buildUserOperation({
-        target: toAddress as Hex,
-        value: _am,
-        data: "0x",
+
+      const uoCallData: UserOperationCallData = encodeFunctionData({
+        abi: ERC20_abi,
+        args: [toAddress, _am],
+        functionName: "transfer",
       })
+
+      const uoStruct = await provider.buildUserOperation({ target: address as Hex, data: uoCallData })
       const request = deepHexlify(uoStruct)
       const operationHash = getUserOperationHash(
         request,
@@ -92,12 +97,12 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
       setOpRequest(request)
       setOperationHash(operationHash)
 
+      console.log("===> [TransferUserOperation] OP HASH", operationHash)
       if (!muSigTx) {
         const ms = new MultiSigSchnorrTx(schnorrSigners, operationHash)
         setMuSigTx(ms)
+        ms.setOpHash(operationHash)
       }
-      muSigTx?.setOpHash(operationHash)
-      console.log("===> [TransferUserOperation] OP HASH", operationHash)
       console.log("===> [TransferUserOperation] muSig", { muSigTx })
       console.log("===> [TransferUserOperation] muSig combined", muSigTx?.combinedPubKey?.toHex())
     }
@@ -108,8 +113,6 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
     // const _client = await getWalletClient({ chainId: accountParams.chainId })
     console.log("===> [TransferUserOperation] accountSigner", accountSigner)
     if (erc20 && decimals && accountSigner && muSigTx && opRequest) {
-      const _am = parseEther(amount)
-
       const aaSignerWithMiddle = accountSigner.withGasEstimator(async (userOperation) => {
         return Promise.resolve({
           ...userOperation,

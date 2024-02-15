@@ -27,7 +27,7 @@ export const MultiOwnerSmartAccount: React.FC<MultiOwnersSmartAccountParams> = (
       </div>
       <NativeSmartWallet {...multiOwnersSmartAccountParams} />
       <UserOperationsERC20 {...multiOwnersSmartAccountParams} />
-      <CreateSignature {...multiOwnersSmartAccountParams} />
+      {/* <CreateSignature {...multiOwnersSmartAccountParams} /> */}
     </div>
   )
 }
