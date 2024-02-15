@@ -146,7 +146,7 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
       // console.log("===> [TransferUserOperation] signers", _sig1, _sig2)
 
       console.log("===> [TransferUserOperation][musigtx] single sign done", { muSigTx })
-      const sumSignature = muSigTx.getMultiSign()
+      const sumSignature = muSigTx.getMultiSignFull()
       console.log("===> [TransferUserOperation][musigtx] sum sig", sumSignature)
       opRequest.signature = sumSignature as Hex
       console.log("===> [TransferUserOperation][musigtx] opRequest", { opRequest })

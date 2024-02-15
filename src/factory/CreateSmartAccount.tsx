@@ -22,10 +22,12 @@ export const CreateSmartAccount: React.FC<SmartAccountFactoryParams> = ({ chainI
   const [schnorrSigner, setSchnorrSigner] = useState<SchnorrSigner[]>([])
   const [allComboAddresses, setAllComboAddresses] = useState<string[]>([])
   const [combinedPubKeys, setCombinedPubKeys] = useState<string[]>([
-    "0x372A291A9cad69b0F5F231cf1885574e9De7fD33",
-    "0x55a0a5Deb3AB0Eb280d34670EB27C5bbd54931FD",
-    "0x5a50893a11d37bc12f0af0514883ff85dd224e20",
-    "0xccec0a637cff7b18f7b53ca4b5fd7a13ebc438c7",
+    "0x86bdff71227301d3d1d13cf0538f23bf555a4265",
+    "0x957a802ccb5a918ba137bf9f795ebd65fa1f1f46",
+    "0xf659f67e7b203b8e2d5585a736aba13ad55217b1",
+    "0x2f21aafed209d8ccb8cecba6850743fde645de08",
+    "0xe3ca21f9f9e4b21ed2f3bcbebf82e9be7b75b4a5",
+    "0x75b731e25ffe4bad233356e4bf40168e5f35aa0d",
     "0x8507cccd2eb83b90b8ef92e7bdde6556b0508d7e",
   ])
   const [combinedSchnorrKey, setCombinedSchnorrKey] = useState<Key>()
@@ -43,6 +45,7 @@ export const CreateSmartAccount: React.FC<SmartAccountFactoryParams> = ({ chainI
   const handleGetAllComboAddresses = async () => {
     const _combos = getAllCombinedPubAddressXofY(schnorrSigner, 1)
     setAllComboAddresses(_combos)
+    setCombinedPubKeys(_combos)
     console.log("AA COMBO ADDRESSES CREATED", _combos)
   }
 
