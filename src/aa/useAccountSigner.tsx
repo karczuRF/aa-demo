@@ -63,7 +63,7 @@ export function useAccountSigner({
           smartAccount.isAccountDeployed().then((deployed: unknown) => {
             console.log("===> [useAccountSigner] deployed", deployed)
           })
-
+          
           return smartAccount
         })
         // accountSigner.withCustomMiddleware(async (userOperation) => {

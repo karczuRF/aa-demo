@@ -33,6 +33,7 @@ export const CreateSignature: React.FC<MultiOwnersSmartAccountParams> = (account
   // const [combinedPubKey, setCombinedPubKey] = useState<Key>()
 
   const schnorrSigners = useSchnorrSigners({ chainId })
+
   // const muSigTx = useMultiSigTx({ signers: schnorrSigners, opHash: msgHash as Hex })
 
   const handlePkNonces = () => {
