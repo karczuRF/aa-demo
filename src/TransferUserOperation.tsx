@@ -99,7 +99,8 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
 
       console.log("===> [TransferUserOperation] OP HASH", operationHash)
       if (!muSigTx) {
-        const ms = new MultiSigSchnorrTx(schnorrSigners, operationHash)
+        const [s1, s2, s3] = schnorrSigners
+        const ms = new MultiSigSchnorrTx([s1, s2], operationHash)
         setMuSigTx(ms)
         ms.setOpHash(operationHash)
       }
@@ -146,7 +147,7 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
       // console.log("===> [TransferUserOperation] signers", _sig1, _sig2)
 
       console.log("===> [TransferUserOperation][musigtx] single sign done", { muSigTx })
-      const sumSignature = muSigTx.getMultiSignFull()
+      const sumSignature = muSigTx.getMultiSign()
       console.log("===> [TransferUserOperation][musigtx] sum sig", sumSignature)
       opRequest.signature = sumSignature as Hex
       console.log("===> [TransferUserOperation][musigtx] opRequest", { opRequest })
