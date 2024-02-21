@@ -1,7 +1,6 @@
 import React, { useState } from "react"
 import { SmartAccountFactoryParams } from "./SmartAccountFactory.types"
 import { useAccountSigner } from "../aa/useAccountSigner"
-import Schnorrkel from "aams-test/dist/schnorrkel"
 import { Key } from "aams-test/dist/types"
 import {
   createSchnorrSigner,
@@ -11,9 +10,9 @@ import {
 } from "aams-test/dist/utils/schnorr-helpers"
 import { useSmartAccountFactory } from "./useSmartAccountFactory"
 import { Hex, hexToBytes, stringToBytes } from "viem"
-import SchnorrSigner from "aams-test/dist/utils/SchnorrSigner"
 import { useSchnorrSigners } from "../aa/useSchnorrSigners"
 import { usePublicEthersProvider } from "../aa/usePublicEthersProvider"
+import { SchnorrSigner, Schnorrkel } from "aams-test/dist/signers"
 
 export const CreateSmartAccount: React.FC<SmartAccountFactoryParams> = ({ chainId, factoryAddress }) => {
   const { isFactoryCreated, smartAccountFactory } = useSmartAccountFactory({ chainId, factoryAddress })
@@ -47,15 +46,6 @@ export const CreateSmartAccount: React.FC<SmartAccountFactoryParams> = ({ chainI
     setAllComboAddresses(_combos)
     setCombinedPubKeys(_combos)
     console.log("AA COMBO ADDRESSES CREATED", _combos)
-  }
-
-  const handleGetCombinedPubKeys = async () => {
-    console.log("get combined pub key")
-    const _keys = combinedPubKeys.map((key) => pKeyString2Key(key))
-    console.log("get combined pub key:", _keys)
-    const _combined = Schnorrkel.getCombinedPublicKey(_keys)
-    setCombinedSchnorrKey(_combined)
-    return _combined
   }
 
   const handleCreateSmartAccount = async () => {

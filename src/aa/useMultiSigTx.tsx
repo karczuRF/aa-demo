@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react"
 import SchnorrSigner from "aams-test/dist/utils/SchnorrSigner"
-import MultiSigSchnorrTx from "../account-abstraction/MultiSigSchnorrTx.ts"
+import SchnorrMultiSigTx from "../account-abstraction/SchnorrMultiSigTx.ts"
 import { Hex } from "viem"
 
 export function useMultiSigTx({ signers, opHash }: { signers: SchnorrSigner[]; opHash: Hex }) {
-  const [multiSigTx, setMultiSigTx] = useState<MultiSigSchnorrTx>()
+  const [multiSigTx, setMultiSigTx] = useState<SchnorrMultiSigTx>()
 
   useEffect(() => {
     console.log("return musig tx useeffect", multiSigTx?.isInitialized)
     function getMultiSigTx() {
       if (signers.length > 1) {
-        const tx = new MultiSigSchnorrTx(signers, opHash)
+        const tx = new SchnorrMultiSigTx(signers, opHash)
         setMultiSigTx(tx)
       }
     }

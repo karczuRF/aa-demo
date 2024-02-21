@@ -15,7 +15,7 @@ import { Hex } from "viem"
 import { PublicNonces } from "aams-test/dist/types/nonce"
 import { Key } from "aams-test/dist/types/key"
 import { useMultiSigTx } from "../../aa/useMultiSigTx.tsx"
-import MultiSigSchnorrTx from "../../account-abstraction/MultiSigSchnorrTx.ts"
+import SchnorrMultiSigTx from "../../account-abstraction/SchnorrMultiSigTx.ts"
 
 export const CreateSignature: React.FC<MultiOwnersSmartAccountParams> = (accountParams) => {
   const { chainId } = accountParams
@@ -26,7 +26,7 @@ export const CreateSignature: React.FC<MultiOwnersSmartAccountParams> = (account
   const [summedMuSig, setMuSig] = useState<Signature>()
   const { multiOwnerSmartAccount } = useMultiOwnerSmartAccount(accountParams)
   const [isValidSig, setIsValidSig] = useState<boolean>()
-  const [muSigTx, setMultiSigTx] = useState<MultiSigSchnorrTx>()
+  const [muSigTx, setMultiSigTx] = useState<SchnorrMultiSigTx>()
 
   // const [pubKeys, setPubKeys] = useState<Key[]>([])
   // const [nonces, setNonces] = useState<PublicNonces[]>([])
@@ -40,7 +40,7 @@ export const CreateSignature: React.FC<MultiOwnersSmartAccountParams> = (account
     const pk = schnorrSigners.flatMap((sig) => sig.getPublicKey())
     const pn = schnorrSigners.flatMap((sig) => sig.getPublicNonces())
     const cpk = Schnorrkel.getCombinedPublicKey(pk)
-    const tx = new MultiSigSchnorrTx(schnorrSigners, msgHash as Hex)
+    const tx = new SchnorrMultiSigTx(schnorrSigners, msgHash as Hex)
     setMultiSigTx(tx)
     // setPubKeys(pk)
     // setNonces(pn)

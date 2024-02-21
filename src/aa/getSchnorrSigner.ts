@@ -73,7 +73,7 @@ export function getSchnorrSigner(signer: SchnorrSigner): SmartAccountSigner {
   }
 }
 
-// export function getSchnorrSignerTx(signer: SchnorrSigner, muSigTx: MultiSigSchnorrTx): SmartAccountSigner {
+// export function getSchnorrSignerTx(signer: SchnorrSigner, muSigTx: SchnorrMultiSigTx): SmartAccountSigner {
 //   return {
 //     signerType: "schnorr",
 //     inner: signer,
