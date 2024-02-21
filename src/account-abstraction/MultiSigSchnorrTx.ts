@@ -22,26 +22,26 @@ export interface MuSigCombo {
 
 //   // create array of possible signers combinations limited by given X (out of Y) multisignature
 //   const allSignersCombos: SchnorrSigner[][] = getAllCombos(signers).filter((combo) => combo.length >= x)
-//   const publicKeysCombos: Key[][] = allSignersCombos.map((signers) => signers.map((signer) => signer.getPublicKey()))
+//   const publicKeysCombos: Key[][] = allSignersCombos.map((signers) => signers.map((signer) => signer.getPubKey()))
 //   const allCombinedPubKeys = publicKeysCombos.map((publicKeys) => Schnorrkel.getCombinedPublicKey(publicKeys))
 //   return allCombinedPubKeys
 // }
 
-export function createCombos(signers: SchnorrSigner[], x: number): MuSigCombo[] {
-  if (signers.length < 2) {
-    throw Error("At least 2 signers should be provided")
-  }
-  const allSignersCombos: SchnorrSigner[][] = getAllCombos(signers).filter((combo) => combo.length >= x)
-  const combos: MuSigCombo[] = []
-  allSignersCombos.forEach((signers, i) => {
-    const _pk = signers.map((signer) => signer.getPublicKey())
-    const combinedPubKey = Schnorrkel.getCombinedPublicKey(_pk)
-    const _combo = { signers, combinedPubKey, signatures: [] }
-    combos[i] = _combo
-  })
-  console.log("COMBO", { combos })
-  return combos
-}
+// export function createCombos(signers: SchnorrSigner[], x: number): MuSigCombo[] {
+//   if (signers.length < 2) {
+//     throw Error("At least 2 signers should be provided")
+//   }
+//   const allSignersCombos: SchnorrSigner[][] = getAllCombos(signers).filter((combo) => combo.length >= x)
+//   const combos: MuSigCombo[] = []
+//   allSignersCombos.forEach((signers, i) => {
+//     const _pk = signers.map((signer) => signer.getPubKey())
+//     const combinedPubKey = Schnorrkel.getCombinedPublicKey(_pk)
+//     const _combo = { signers, combinedPubKey, signatures: [] }
+//     combos[i] = _combo
+//   })
+//   console.log("COMBO", { combos })
+//   return combos
+// }
 
 export type MuSigSingleSigns = {
   [signerAddress: string]: SignatureOutput
@@ -75,7 +75,7 @@ export default class MultiSigSchnorrTx {
   // combos: MuSigCombo[] = []
   // signersCombos: MuSigSignersCombos = {}
 
-  constructor(signers: SchnorrSigner[], opHash: Hex) {
+  constructor(signers: SchnorrSigner[], opHash: Hex, _id: number = 0) {
     console.log("[musigtx] create tx", this.isInitialized, { signers })
     this.signers = signers
     if (this.isInitialized) return
@@ -87,19 +87,24 @@ export default class MultiSigSchnorrTx {
     //   console.log("[musigtx] create signer", _signerAddress)
     //   this.signersCombos[_signerAddress] = []
     //   // this.nonces[_signerAddress] = sig.getPublicNonces()
-    //   // this.publicKeys[_signerAddress] = sig.getPublicKey()
+    //   // this.publicKeys[_signerAddress] = sig.getPubKey()
     // })
     const publicKeys: Key[] = signers.map((signer) => {
-      const pk = signer.getPublicKey()
+      const pk = signer.getPubKey()
       this.publicKeys[signer.getAddress()] = pk
       return pk
     })
 
     const publicNonces: PublicNonces[] = signers.map((signer) => {
-      const pn = signer.getPublicNonces()
+      console.log("[PN] has id tx", _id)
+      console.log("[PN] has nonces?", signer.hasNonces())
+      const pn = signer.generatePubNonces()
       this.publicNonces[signer.getAddress()] = pn
+      // console.log("[PN] has nonces?", signer.hasNonces())
+      console.log("[PN] constr is equal", signer.getPubNonces().kPublic.toHex() === pn.kPublic.toHex())
       return pn
     })
+
     this.pubKeys = publicKeys
     this.pubNonces = publicNonces
     this.combinedPubKey = Schnorrkel.getCombinedPublicKey(publicKeys)
@@ -122,7 +127,7 @@ export default class MultiSigSchnorrTx {
   //   allSignersCombos.forEach((signers, i) => {
   //     console.log("COMBO", signers)
 
-  //     const _pk = signers.map((signer) => signer.getPublicKey())
+  //     const _pk = signers.map((signer) => signer.getPubKey())
   //     const combinedPubKey = Schnorrkel.getCombinedPublicKey(_pk)
   //     const _combo = { schnorrSigners: signers, combinedPubKey: combinedPubKey, signatures: [] }
   //     combos[i] = _combo
@@ -163,11 +168,13 @@ export default class MultiSigSchnorrTx {
   // TODO !!!!!! HERE CHANGE `multiSigHash` params - take them every time from combo
   // each combo has different pubkey and nonces
   singleSignHash(signer: SchnorrSigner) {
-    console.log("[musigtx] single sign nonces", this.msg, this.publicKeys, this.publicNonces)
     const op = this.opHash
-    const pk = this.getPublicKeys()
-    const pn = this.getPublicNonces()
-    const _sig = signer.multiSignHash(op, pk, pn)
+    const pk = this.pubKeys
+    const pn = this._getPublicNonces()
+
+    const isPn = pn.includes(signer.getPubNonces())
+    console.log("[musigtx][pn]", isPn, this.publicNonces[signer.getAddress()].kPublic.buffer.length)
+    const _sig = signer.signMultiSigHash(op, pk, pn)
     // TODO test
     // this.signersCombos[signer.getAddress()].forEach((combo) => {
     //   // const _sig = signer.multiSignHash(op, pk, pn)
@@ -180,20 +187,18 @@ export default class MultiSigSchnorrTx {
     return _sig
   }
 
-  // setSingleSign(signer: SchnorrSigner, signature: SignatureOutput) {
-  //   const _signer = signer.getAddress()
-  //   console.log("[musigtx] set single sign", { signature })
-  //   console.log("[musigtx] set single sign", _signer)
-  //   this.signatures[_signer] = signature
-  // }
+  hasPublicNonces(_publicNonces: PublicNonces) {
+    console.log("this nonces", this.pubNonces)
+    return this.pubNonces.includes(_publicNonces)
+  }
 
-  getSignatures(): SignatureOutput[] {
+  _getSignatures(): SignatureOutput[] {
     return Object.entries(this.signatures).map(([, sig]) => {
       return sig
     })
   }
 
-  getPublicNonces(): PublicNonces[] {
+  _getPublicNonces(): PublicNonces[] {
     return Object.entries(this.publicNonces).map(([, nonce]) => {
       return nonce
     })
@@ -208,7 +213,7 @@ export default class MultiSigSchnorrTx {
   getMultiSign() {
     console.log("[musigtx] get multi sign")
     if (!this.combinedPubKey || !this.signatures || this.signers.length < 2) return
-    const _signatures = this.getSignatures()
+    const _signatures = this._getSignatures()
     const _sigs: Signature[] = _signatures.map((sig) => sig.signature)
     const challenges: Challenge[] = _signatures.map((sig) => sig.challenge)
     console.log("[musigtx] get multi sign array", _sigs)
