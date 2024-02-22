@@ -18,11 +18,14 @@ import {
   deepHexlify,
   getUserOperationHash,
 } from "@alchemy/aa-core"
-
+import { SchnorrSigner } from "aams-test/dist/signers/SchnorrSigner"
+import { SchnorrMultiSigTx } from "aams-test/dist/transaction/SchnorrMultiSigTx"
 import { ERC20_abi } from "aams-test/dist/abi/index"
 import { createSchnorrSigner } from "aams-test/dist/utils/schnorr-helpers"
-import { SchnorrMultiSigTx } from "aams-test/dist/transaction/SchnorrMultiSigTx"
-import { SchnorrSigner } from "aams-test/dist/signers/SchnorrSigner"
+import {
+  MultiSigAccountSigner,
+  createMultiSigAccountSigner,
+} from "aams-test/dist/accountAbstraction/MultiSigAccountSigner"
 
 // import { UserOperationStruct } from "aams-test/dist/typechain/contracts/MultiSigSmartAccount"
 const pk1 = import.meta.env.VITE_SIGNER_PRIVATE_KEY
@@ -46,6 +49,7 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
   ...accountParams
 }) => {
   const [amount, setAmount] = useState<string>("0")
+  const [musigSigner, setMusigSigner] = useState<MultiSigAccountSigner>()
   const [id, setId] = useState<number>(0)
   const [idSigner, setIdSigner] = useState<number>(0)
   const [txHash, setTxHash] = useState<string>("")
@@ -94,12 +98,11 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
     }
   }
 
-  function createInstance<A extends SchnorrMultiSigTx>(c: new (...[]) => A): A {
-    return new c()
-  }
   const handleGenerateOpHash = async () => {
     console.log("===> [TransferUserOperation] accountSigner", accountSigner)
     if (accountSigner && decimals) {
+      const _signer = createMultiSigAccountSigner(accountSigner)
+      setMusigSigner(_signer)
       const _am = parseUnits(amount, decimals)
       const aaSignerWithMiddle = accountSigner.withGasEstimator(async (userOperation) => {
         return Promise.resolve({
@@ -112,32 +115,33 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
         })
       })
 
-      const provider = accountSigner.provider.accountProvider
-
       const uoCallData: UserOperationCallData = encodeFunctionData({
         abi: ERC20_abi,
         args: [toAddress, _am],
         functionName: "transfer",
       })
 
-      const uoStruct = await provider.buildUserOperation({ target: address as Hex, data: uoCallData })
-      const request = deepHexlify(uoStruct)
-      const operationHash = getUserOperationHash(
-        request,
-        provider.getEntryPointAddress(),
-        BigInt(await accountSigner.getChainId())
-      )
-      setOpRequest(request)
-      setOperationHash(operationHash)
+      const { opHash, request } = await _signer.buildUserOp({ data: uoCallData, target: address as Hex })
 
-      console.log("===> [TransferUserOperation] OP HASH", operationHash)
+      // TODO TEST BUILDING OP
+      // const uoStruct = await provider.buildUserOperation({ target: address as Hex, data: uoCallData })
+      // const request = deepHexlify(uoStruct)
+      // const operationHash = getUserOperationHash(
+      //   request,
+      //   provider.getEntryPointAddress(),
+      //   BigInt(await accountSigner.getChainId())
+      // )
+      setOpRequest(request)
+      setOperationHash(opHash)
+
+      console.log("===> [TransferUserOperation] OP HASH", opHash)
 
       // const allSignersCombos: SchnorrSigner[][] = getAllCombos(schnorrSigners).filter((combo) => combo.length >= 2)
 
-      const signer1 = createSchnorrSigner(hexToBytes(pk1), 1)
-      const signer2 = createSchnorrSigner(hexToBytes(pk2), 2)
+      const signer1 = createSchnorrSigner(hexToBytes(pk1))
+      const signer2 = createSchnorrSigner(hexToBytes(pk2))
       const combo1 = [signer1, signer2]
-      const ms1 = new SchnorrMultiSigTx(combo1, operationHash)
+      const ms1 = new SchnorrMultiSigTx(combo1, opHash, request)
 
       const tx1: Tx = {
         tx: ms1,
@@ -145,10 +149,10 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
       }
       // tx?.push(tx1)
 
-      const signer3 = createSchnorrSigner(hexToBytes(pk1), 3)
-      const signer4 = createSchnorrSigner(hexToBytes(pk2), 4)
+      const signer3 = createSchnorrSigner(hexToBytes(pk1))
+      const signer4 = createSchnorrSigner(hexToBytes(pk2))
       const combo2 = [signer3, signer4]
-      const ms2 = new SchnorrMultiSigTx(combo2, operationHash)
+      const ms2 = new SchnorrMultiSigTx(combo2, opHash, request)
 
       const tx2: Tx = {
         tx: ms2,
@@ -156,11 +160,11 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
       }
       // tx?.push(tx1)
 
-      const signer5 = createSchnorrSigner(hexToBytes(pk2), 5)
-      const signer6 = createSchnorrSigner(hexToBytes(pk3), 6)
-      const signer7 = createSchnorrSigner(hexToBytes(pk1), 7)
+      const signer5 = createSchnorrSigner(hexToBytes(pk2))
+      const signer6 = createSchnorrSigner(hexToBytes(pk3))
+      const signer7 = createSchnorrSigner(hexToBytes(pk1))
       const combo3 = [signer5, signer6, signer7]
-      const ms3 = new SchnorrMultiSigTx(combo3, operationHash)
+      const ms3 = new SchnorrMultiSigTx(combo3, opHash, request)
 
       const tx3: Tx = {
         tx: ms3,
@@ -212,17 +216,22 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
       // const _sig2 = muSigTx.singleSignMessage(schnorrSigners[1])
       // console.log("===> [TransferUserOperation] signers", _sig1, _sig2)
 
-      if (!txInstances) return
+      if (!txInstances || !musigSigner) return
       const _multiSigTx = txInstances[id].tx
-      console.log("===> [TransferUserOperation][musigtx] single sign done", { _multiSigTx })
-      const sumSignature = _multiSigTx.getSummedSigData()
-      console.log("===> [TransferUserOperation][musigtx] sum sig", sumSignature)
-      console.log("===> [TransferUserOperation][musigtx] nonce", smartAccount?.getNonce())
-      opRequest.signature = sumSignature as Hex
-      console.log("===> [TransferUserOperation][musigtx] opRequest", { opRequest })
+      // console.log("===> [TransferUserOperation][musigtx] single sign done", { _multiSigTx })
+      // const sumSignature = _multiSigTx.getSummedSigData()
+      // console.log("===> [TransferUserOperation][musigtx] sum sig", sumSignature)
+      // console.log("===> [TransferUserOperation][musigtx] nonce", smartAccount?.getNonce())
+      // opRequest.signature = sumSignature as Hex
+      // console.log("===> [TransferUserOperation][musigtx] opRequest", { opRequest })
       // console.log("===> [TransferUserOperation] request", { request })
-      const txHash = await provider.rpcClient.sendUserOperation(opRequest, provider.getEntryPointAddress())
-      const _tx = await provider.waitForUserOperationTransaction(txHash)
+
+      // TODO TEST IF SENDER WORKS
+      // const txHash = await provider.rpcClient.sendUserOperation(opRequest, provider.getEntryPointAddress())
+      // const _tx = await provider.waitForUserOperationTransaction(txHash)
+      // const _signer = createMultiSigAccountSigner(accountSigner)
+
+      const _tx = await musigSigner.sendMultiSigTransaction(_multiSigTx)
 
       console.log("===> [TransferUserOperation] userOperationTransaction", _tx)
       setTxHash(_tx)

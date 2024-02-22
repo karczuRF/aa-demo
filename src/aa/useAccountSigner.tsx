@@ -30,8 +30,8 @@ export function useAccountSigner({
   const _signer = useSchnorrSigners({ chainId })[accountIndex ?? 0]
   const _ownerSchnorrAccount = useAccountOwner({ signer: _signer })
   const chain = getChain(chainId)
-  const publicProvider = usePublicEthersProvider({ chainId }) as providers.JsonRpcProvider
-  // const publicProvider = useAlchemyProvider(chain)
+  // const publicProvider = usePublicEthersProvider({ chainId }) as providers.JsonRpcProvider
+  const publicProvider = useAlchemyProvider(chain)
   // console.log("===> [useAccountSigner] externalAccountAddress", externalAccountAddress)
   useEffect(() => {
     async function getAccountSigner() {
@@ -63,7 +63,7 @@ export function useAccountSigner({
           smartAccount.isAccountDeployed().then((deployed: unknown) => {
             console.log("===> [useAccountSigner] deployed", deployed)
           })
-          
+
           return smartAccount
         })
         // accountSigner.withCustomMiddleware(async (userOperation) => {
