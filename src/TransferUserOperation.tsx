@@ -78,7 +78,15 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
         functionName: "transfer",
       })
 
-      const { opHash, request } = await _signer.buildUserOp({ data: uoCallData, target: address as Hex })
+      const { opHash, request } = await _signer.buildUserOpWithGasEstimator(
+        {
+          data: uoCallData,
+          target: address as Hex,
+        },
+        {
+          preVerificationGas: 2000000,
+        }
+      )
       setOperationHash(opHash)
 
       console.log("===> [TransferUserOperation] OP HASH", opHash)
