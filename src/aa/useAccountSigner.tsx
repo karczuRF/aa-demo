@@ -1,20 +1,13 @@
 import { getChain } from "@alchemy/aa-core"
-// import { withAlchemyGasFeeEstimator } from "@alchemy/aa-alchemy";
-import {
-  AccountSigner,
-  EthersProviderAdapter,
-  convertEthersSignerToAccountSigner,
-  convertWalletToAccountSigner,
-} from "@alchemy/aa-ethers"
+import { AccountSigner, EthersProviderAdapter } from "@alchemy/aa-ethers"
 import { useAccountOwner } from "./useAccountOwner.tsx"
 import { Chain, Hex } from "viem"
 import { MultiSigAccountAbstraction } from "../account-abstraction/MultiSigAccountAbstraction.tsx"
 import { useEffect, useState } from "react"
 import { ENTRYPOINT_ADDRESS, MUSIG_ACCOUNT_FACTORY_ADDRESS } from "../../utils/const.ts"
 import { useAlchemyProvider } from "./useAlchemyProvider.ts"
-import { providers, utils } from "ethers"
+import { utils } from "ethers"
 import { useSchnorrSigners } from "./useSchnorrSigners.tsx"
-import { usePublicEthersProvider } from "./usePublicEthersProvider.tsx"
 
 export function useAccountSigner({
   chainId,
