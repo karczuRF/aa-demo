@@ -150,7 +150,7 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
       <button onClick={handleSingleSign}>SIGN</button>
       <b>user operation: transfer to {toAddress}</b>
       <input value={amount} onChange={(e) => setAmount(String(e.target.value))} />
-      <button onClick={handleGenerateOpHash}>GENERATE OP HASH</button>
+      <button onClick={handleGenerateOpHash}>INITIALIZE USER OP & GENERATE HASH</button>
       <b>operation hash {operationHash}</b>
       <button onClick={handleTransfer}>SEND USER OP</button>
       <b>user operation: transfer hash {txHash}</b>

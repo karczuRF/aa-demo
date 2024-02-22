@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useEthersSigner } from "../aa/useEthersSigner.tsx"
-import { ConnectionParams } from "../account-abstraction/MultiSigAccountAbstraction.types.ts"
+import { ConnectionParams } from "../aa/MultiSigSmartAccountParams.types.ts"
 
 import { Contract, ethers } from "ethers"
 import { WhitelistPaymaster_abi } from "aams-test/dist/abi/index"

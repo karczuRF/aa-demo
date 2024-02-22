@@ -1,4 +1,4 @@
-import { MultiOwnersSmartAccountParams } from "./MultiOwnersSmartAccount.types.ts"
+import { MultiSigSmartAccountParams } from "./MultiOwnersSmartAccount.types.ts"
 import { useMultiOwnerAccountOwnership } from "./methods/useMultiOwnerAccountOwnership.tsx"
 
 import { useMultiOwnerSmartAccount } from "./useMultiOwnerSmartAccount.tsx"
@@ -9,7 +9,7 @@ import { UserOperationsERC20 } from "../UserOperationsERC20.tsx"
 
 // smart account address 0x89872F0A5F6E8A2aa394E39F9b095761FA5577Eb
 
-export const MultiOwnerSmartAccount: React.FC<MultiOwnersSmartAccountParams> = (multiOwnersSmartAccountParams) => {
+export const MultiOwnerSmartAccount: React.FC<MultiSigSmartAccountParams> = (multiOwnersSmartAccountParams) => {
   const { isOwner, isSigner, eoaAddress, accountSignerAddress } =
     useMultiOwnerAccountOwnership(multiOwnersSmartAccountParams)
 

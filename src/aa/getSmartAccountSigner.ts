@@ -2,7 +2,7 @@ import { Hex, SignTypedDataParams, SmartAccountSigner } from "@alchemy/aa-core"
 import { SchnorrSigner } from "aams-test/dist/signers"
 import { utils } from "ethers"
 
-export function getSchnorrSigner(signer: SchnorrSigner): SmartAccountSigner {
+export function getSmartAccountSigner(signer: SchnorrSigner): SmartAccountSigner {
   return {
     signerType: "schnorr",
     inner: signer,

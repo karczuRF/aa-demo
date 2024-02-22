@@ -2,10 +2,10 @@ import { useEffect, useState } from "react"
 
 import { useAccountSigner } from "../../aa/useAccountSigner.tsx"
 import { useMultiOwnerSmartAccount } from "../useMultiOwnerSmartAccount.tsx"
-import { MultiOwnersSmartAccountParams } from "../MultiOwnersSmartAccount.types.ts"
+import { MultiSigSmartAccountParams } from "../MultiOwnersSmartAccount.types.ts"
 import { useEOA } from "../../eoa/useEOA.tsx"
 
-export const useMultiOwnerAccountOwnership = (multiOwnersSmartAccountParams: MultiOwnersSmartAccountParams) => {
+export const useMultiOwnerAccountOwnership = (multiOwnersSmartAccountParams: MultiSigSmartAccountParams) => {
   const { externalAccountAddress, chainId } = multiOwnersSmartAccountParams
   const [isOwner, setIsOwner] = useState<boolean>(false)
   const [isSigner, setIsSigner] = useState<boolean>(false)

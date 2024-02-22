@@ -1,3 +1,3 @@
-import { ConnectionParams } from "./account-abstraction/MultiSigAccountAbstraction.types"
+import { ConnectionParams } from "./aa/MultiSigSmartAccountParams.types"
 
 export type ERC20Params = ConnectionParams & { address: string; toAddress: string }

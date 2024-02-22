@@ -1,11 +1,11 @@
 import { useEthersSigner } from "../aa/useEthersSigner.tsx"
 import { useEffect, useState } from "react"
 import { useAccountSigner } from "../aa/useAccountSigner.tsx"
-import { MultiOwnersSmartAccountParams } from "./MultiOwnersSmartAccount.types.ts"
+import { MultiSigSmartAccountParams } from "./MultiOwnersSmartAccount.types.ts"
 import { usePublicEthersProvider } from "../aa/usePublicEthersProvider.tsx"
 import { MultiSigSmartAccount, MultiSigSmartAccount__factory } from "aams-test/dist/typechain/index"
 
-export function useMultiOwnerSmartAccount(multiOwnersSmartAccountParams: MultiOwnersSmartAccountParams) {
+export function useMultiOwnerSmartAccount(multiOwnersSmartAccountParams: MultiSigSmartAccountParams) {
   const { chainId } = multiOwnersSmartAccountParams
 
   const [multiOwnerSmartAccount, setMultiOwnerSmartAccount] = useState<MultiSigSmartAccount>()

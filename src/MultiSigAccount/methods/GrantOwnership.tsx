@@ -4,9 +4,9 @@ import { type TransactionRequest } from "@ethersproject/providers"
 import { useAccountSigner } from "../../aa/useAccountSigner.tsx"
 import { Hex } from "../../account-abstraction/UserOperation.ts"
 import { useMultiOwnerSmartAccount } from "../useMultiOwnerSmartAccount.tsx"
-import { MultiOwnersSmartAccountParams } from "../MultiOwnersSmartAccount.types.ts"
+import { MultiSigSmartAccountParams } from "../MultiOwnersSmartAccount.types.ts"
 
-export const GrantOwnership: React.FC<MultiOwnersSmartAccountParams> = ({ chainId, address }) => {
+export const GrantOwnership: React.FC<MultiSigSmartAccountParams> = ({ chainId, address }) => {
   const [newOwner, setNewOwner] = useState<string>("")
   const accountSigner = useAccountSigner({ chainId })
   const { multiOwnerSmartAccount } = useMultiOwnerSmartAccount({ chainId, address })

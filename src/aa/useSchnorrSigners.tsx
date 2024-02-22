@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { ConnectionParams } from "../account-abstraction/MultiSigAccountAbstraction.types.ts"
+import { ConnectionParams } from "./MultiSigSmartAccountParams.types.ts"
 import { createSchnorrSigner } from "aams-test/dist/utils/schnorr-helpers"
 import { hexToBytes } from "viem"
 import { SchnorrSigner } from "aams-test/dist/signers/SchnorrSigner"

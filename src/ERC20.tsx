@@ -3,7 +3,7 @@ import { Balance } from "./Balance.tsx"
 import { Approve } from "./Approve.tsx"
 import { Allowance } from "./Allowance.tsx"
 
-import { ConnectionParams } from "./account-abstraction/MultiSigAccountAbstraction.types.ts"
+import { ConnectionParams } from "./aa/MultiSigSmartAccountParams.types.ts"
 import React, { useState } from "react"
 import { Hex } from "viem"
 

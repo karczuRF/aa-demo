@@ -1,22 +1,29 @@
+import { UserOperationRequest } from "aams-test/dist/accountAbstraction"
+import { SchnorrSigner } from "aams-test/dist/signers"
+import { SchnorrMultiSigTx } from "aams-test/dist/transaction"
 import { useEffect, useState } from "react"
-import SchnorrSigner from "aams-test/dist/utils/SchnorrSigner"
-import SchnorrMultiSigTx from "../account-abstraction/SchnorrMultiSigTx.ts"
 import { Hex } from "viem"
 
-export function useMultiSigTx({ signers, opHash }: { signers: SchnorrSigner[]; opHash: Hex }) {
+export function useMultiSigTx({
+  signers,
+  opHash,
+  userOp,
+}: {
+  signers: SchnorrSigner[]
+  opHash: Hex
+  userOp: UserOperationRequest
+}) {
   const [multiSigTx, setMultiSigTx] = useState<SchnorrMultiSigTx>()
 
   useEffect(() => {
-    console.log("return musig tx useeffect", multiSigTx?.isInitialized)
     function getMultiSigTx() {
       if (signers.length > 1) {
-        const tx = new SchnorrMultiSigTx(signers, opHash)
+        const tx = new SchnorrMultiSigTx(signers, opHash, userOp)
         setMultiSigTx(tx)
       }
     }
     getMultiSigTx()
-  }, [signers, opHash])
+  }, [signers, opHash, userOp])
 
-  console.log("return musig tx", multiSigTx?.isInitialized)
   return multiSigTx
 }

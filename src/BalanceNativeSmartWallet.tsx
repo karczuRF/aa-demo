@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react"
 
 import { useAccountSigner } from "./aa/useAccountSigner.tsx"
-import { MultiOwnersSmartAccountParams } from "./account-abstraction/MultiSigAccountAbstraction.types.ts"
+import { MultiSigSmartAccountParams } from "./aa/MultiSigSmartAccountParams.types.ts"
 import { utils } from "ethers"
 
-export const BalanceNativeSmartWallet: React.FC<MultiOwnersSmartAccountParams> = (accountParams) => {
+export const BalanceNativeSmartWallet: React.FC<MultiSigSmartAccountParams> = (accountParams) => {
   const [balance, setBalance] = useState<string>("0")
   const [address, setAddress] = useState<string>("0x")
 

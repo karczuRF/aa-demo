@@ -1,10 +1,10 @@
 import { useMemo } from "react"
-import { getSchnorrSigner } from "./getSchnorrSigner.ts"
+import { getSmartAccountSigner } from "./getSmartAccountSigner.ts"
 import { SchnorrSigner } from "aams-test/dist/signers/SchnorrSigner"
 
 export function useAccountOwner({ signer }: { signer: SchnorrSigner }) {
   const owner = useMemo(() => {
-    return getSchnorrSigner(signer)
+    return getSmartAccountSigner(signer)
   }, [signer])
 
   return owner

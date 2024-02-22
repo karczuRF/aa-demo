@@ -1,7 +1,7 @@
 import { BalanceNativeSmartWallet } from "./BalanceNativeSmartWallet.tsx"
-import { MultiOwnersSmartAccountParams } from "./account-abstraction/MultiSigAccountAbstraction.types.ts"
+import { MultiSigSmartAccountParams } from "./aa/MultiSigSmartAccountParams.types.ts"
 
-export const NativeSmartWallet: React.FC<MultiOwnersSmartAccountParams> = (accountParams) => {
+export const NativeSmartWallet: React.FC<MultiSigSmartAccountParams> = (accountParams) => {
   return (
     <div style={{ margin: "48px", padding: "12px", border: "1px solid black" }}>
       <h3 style={{ color: "yellow" }}>Native Smart Wallet</h3>

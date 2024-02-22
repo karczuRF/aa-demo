@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { useEthersSigner } from "../aa/useEthersSigner.tsx"
-import { ConnectionParams } from "../account-abstraction/MultiSigAccountAbstraction.types.ts"
+import { ConnectionParams } from "../aa/MultiSigSmartAccountParams.types.ts"
 import { typechain } from "aams-test"
 import { Contract, ethers } from "ethers"
 import { EntryPointAbi } from "@alchemy/aa-core"

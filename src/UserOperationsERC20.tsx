@@ -1,11 +1,11 @@
 import React, { useState } from "react"
 import { Hex } from "viem"
-import { MultiOwnersSmartAccountParams } from "./account-abstraction/MultiSigAccountAbstraction.types.ts"
+import { MultiSigSmartAccountParams } from "./aa/MultiSigSmartAccountParams.types.ts"
 import { TransferUserOperation } from "./TransferUserOperation.tsx"
 import { FAKE_USD_ADDRESS, SMART_ACCOUNT_ADDRESS } from "../utils/const.ts"
 import { Balance } from "./Balance.tsx"
 
-export const UserOperationsERC20: React.FC<MultiOwnersSmartAccountParams> = ({ ...accountParams }) => {
+export const UserOperationsERC20: React.FC<MultiSigSmartAccountParams> = ({ ...accountParams }) => {
   const [toAddress, setToAddress] = useState<Hex | undefined>("0x75a12C0550fd620388bcdD7B0c2b8133Be53dEb4")
   const [erc20Address, setERC20Address] = useState<string>(FAKE_USD_ADDRESS)
   const handleChangeAddress = (event: React.ChangeEvent<HTMLInputElement>) => {

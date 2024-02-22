@@ -2,12 +2,13 @@ import { getChain } from "@alchemy/aa-core"
 import { AccountSigner, EthersProviderAdapter } from "@alchemy/aa-ethers"
 import { useAccountOwner } from "./useAccountOwner.tsx"
 import { Chain, Hex } from "viem"
-import { MultiSigAccountAbstraction } from "../account-abstraction/MultiSigAccountAbstraction.tsx"
+// import { MultiSigAccountAbstraction } from "../account-abstraction/MultiSigAccountAbstraction.tsx"
 import { useEffect, useState } from "react"
 import { ENTRYPOINT_ADDRESS, MUSIG_ACCOUNT_FACTORY_ADDRESS } from "../../utils/const.ts"
 import { useAlchemyProvider } from "./useAlchemyProvider.ts"
 import { utils } from "ethers"
 import { useSchnorrSigners } from "./useSchnorrSigners.tsx"
+import { MultiSigAccountAbstraction } from "aams-test/dist/accountAbstraction/MultiSigAccountAbstraction"
 
 export function useAccountSigner({
   chainId,
@@ -19,13 +20,14 @@ export function useAccountSigner({
   accountIndex?: number
 }) {
   const [accountSigner, setAccountSigner] = useState<AccountSigner<MultiSigAccountAbstraction> | undefined>()
-  const [accountOwner, setAccountOwner] = useState<string | undefined>()
   const _signer = useSchnorrSigners({ chainId })[accountIndex ?? 0]
   const _ownerSchnorrAccount = useAccountOwner({ signer: _signer })
   const chain = getChain(chainId)
+
+  /* Note: publicProvider can be also created from Ethers Provider */
   // const publicProvider = usePublicEthersProvider({ chainId }) as providers.JsonRpcProvider
   const publicProvider = useAlchemyProvider(chain)
-  // console.log("===> [useAccountSigner] externalAccountAddress", externalAccountAddress)
+
   useEffect(() => {
     async function getAccountSigner() {
       if (publicProvider && _ownerSchnorrAccount && externalAccountAddress) {
@@ -59,27 +61,13 @@ export function useAccountSigner({
 
           return smartAccount
         })
-        // accountSigner.withCustomMiddleware(async (userOperation) => {
-        //   return Promise.resolve({
-        //     ...userOperation,
-        //     verificationGasLimit: Promise.resolve(2000000),
-        //     // maxFeePerGas: Promise.resolve(utils.parseUnits("200", "gwei").toHexString() as Hex),
-        //     // maxPriorityFeePerGas: Promise.resolve(utils.parseUnits("200", "gwei").toHexString() as Hex),
-        //   })
-        // })
-        // console.log(
-        //   "===> [useAccountSigner] accountSigner smart account",
-        //   { accountSigner },
-        //   await accountSigner.getAddress()
-        // )
+
         setAccountSigner(accountSigner)
-        setAccountOwner(await _ownerSchnorrAccount.getAddress())
       }
     }
     getAccountSigner()
   }, [publicProvider, _ownerSchnorrAccount, chainId, externalAccountAddress])
 
-  // console.log("===> [useAccountSigner] accountSigner owner", accountOwner)
   console.log("===> [useAccountSigner] accountSigner", accountSigner)
   return accountSigner
 }
