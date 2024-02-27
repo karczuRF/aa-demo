@@ -7,7 +7,8 @@
     "rei": "rm -rf node_modules/ && npm i",
     "dev": "vite",
     "build": "tsc && vite build",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "npx eslint '{test,scripts,deploy,shared}/**/*.ts'",
+    "lint:fix": "npx eslint '{test,scripts,deploy,shared}/**/*.ts' --fix",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -41,6 +42,7 @@
     "ecurve": "^1.0.6",
     "eslint": "^8.55.0",
     "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-prettier": "^3.4.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "ethers": "^5.7.2",
     "secp256k1": "^5.0.0",
