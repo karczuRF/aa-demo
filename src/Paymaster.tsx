@@ -5,7 +5,7 @@ import { useEthersSigner } from "./aa/useEthersSigner.tsx"
 import { ConnectionParams } from "./MultiSigAccount/MultiOwnersSmartAccount.types.ts"
 import { utils } from "ethers"
 import { useEntrypoint } from "./entrypoint/useEntrypoint.tsx"
-import { UserOperationEventEvent } from "aams-test/dist/typechain/contracts/erc4337/interfaces/IAlchemyEntryPoint"
+import { UserOperationEventEvent } from "aa-schnorr-multisig/dist/typechain/contracts/erc4337/core/EntryPoint"
 
 export const Paymaster: React.FC<ConnectionParams> = (connectionParams) => {
   const paymasterAddress = "0x3082a7b8C4Da84C01919b0ff2ab4593ADbd6d196"
@@ -16,7 +16,7 @@ export const Paymaster: React.FC<ConnectionParams> = (connectionParams) => {
   const [isOwner, setIsOwner] = useState<boolean>(false)
   const [senderAddress, setSenderAddress] = useState<string>("")
   const [signerAddress, setSignerAddress] = useState<string>("")
-  const [events, setEvents] = useState<UserOperationEventEvent.Log[]>([])
+  const [events, setEvents] = useState<UserOperationEventEvent[]>([])
 
   const [isWhitelisted, setIsWhitelisted] = useState<boolean | undefined>()
   const [senderAddress2, setSenderAddress2] = useState<string>("")

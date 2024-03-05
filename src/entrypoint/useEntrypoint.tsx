@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react"
 import { useEthersSigner } from "../aa/useEthersSigner.tsx"
 import { ConnectionParams } from "../aa/MultiSigSmartAccountParams.types.ts"
-import { typechain } from "aams-test"
-import { Contract, ethers } from "ethers"
+import { ethers } from "ethers"
 import { EntryPointAbi } from "@alchemy/aa-core"
-import { EntryPoint } from "aams-test/dist/typechain/index"
+import { EntryPoint } from "aa-schnorr-multisig/dist/typechain/index"
 
 export function useEntrypoint({ entrypointAddress, chainId }: { entrypointAddress: string } & ConnectionParams) {
   const [entrypoint, setEntrypoint] = useState<EntryPoint>()

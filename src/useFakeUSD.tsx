@@ -1,18 +1,16 @@
 import { useEthersSigner } from "./aa/useEthersSigner.tsx"
 import { useEffect, useState } from "react"
-import { ERC20, ERC20__factory } from "aams-test/dist/typechain/index"
-
-// console.log({ aams })
-// const typechain = aams.typechain
+import { ethers } from "ethers"
+import { ERC20_abi } from "../utils/abi/index.ts"
 
 export function useERC20({ address, chainId }: { address: string; chainId?: number }) {
-  const [erc20, setERC20] = useState<ERC20>()
+  const [erc20, setERC20] = useState<any>()
   const [decimals, setDecimals] = useState<number>()
   const signer = useEthersSigner({ chainId })
 
   useEffect(() => {
     if (signer) {
-      const erc20 = ERC20__factory.connect(address, signer)
+      const erc20 = new ethers.Contract(address, ERC20_abi, signer)
       setERC20(erc20)
       setDecimals(6)
     }

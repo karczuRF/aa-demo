@@ -1,11 +1,15 @@
 import { useEthersSigner } from "../aa/useEthersSigner.tsx"
 import { useEffect, useState } from "react"
 import { useAccountSigner } from "../aa/useAccountSigner.tsx"
-import { MultiSigSmartAccountFactory } from "aams-test/dist/typechain/index"
 import { ethers } from "ethers"
-import { MultiSigSmartAccountFactory_abi } from "aams-test/dist/abi/index"
 import { SmartAccountFactoryParams } from "./SmartAccountFactory.types.ts"
 import { MUSIG_ACCOUNT_FACTORY_ADDRESS } from "../../utils/const.ts"
+import { MultiSigSmartAccountFactory_abi } from "aa-schnorr-multisig/dist/abi/index"
+import {
+  MultiSigSmartAccountFactory,
+  MultiSigSmartAccountFactory__factory,
+  MultiSigSmartAccount__factory,
+} from "aa-schnorr-multisig/dist/typechain/index"
 
 export function useSmartAccountFactory(smartAccountFactoryParams: SmartAccountFactoryParams) {
   const { chainId, factoryAddress } = smartAccountFactoryParams
@@ -20,15 +24,18 @@ export function useSmartAccountFactory(smartAccountFactoryParams: SmartAccountFa
       if (signer) {
         console.log("banan useSmartAccountFactory isFactoryCreated", isFactoryCreated)
         if (!isFactoryCreated) {
-          // const smartAccountFactory = MultiSigSmartAccount__factory.connect(accountAddress)
-          const _smartAccountFactory = new ethers.Contract(
-            factoryAddress ?? MUSIG_ACCOUNT_FACTORY_ADDRESS,
-            MultiSigSmartAccountFactory_abi,
+          const _smartAccountFactory = MultiSigSmartAccountFactory__factory.connect(
+            MUSIG_ACCOUNT_FACTORY_ADDRESS,
             signer
-          ) as unknown as MultiSigSmartAccountFactory
+          )
+          // const _smartAccountFactory = new ethers.Contract(
+          //   factoryAddress ?? MUSIG_ACCOUNT_FACTORY_ADDRESS,
+          //   MultiSigSmartAccountFactory_abi,
+          //   signer
+          // ) as unknown as MultiSigSmartAccountFactory
 
           setIsFactoryCreated(true)
-          setSmartAccountFactory(_smartAccountFactory)
+          if (_smartAccountFactory) setSmartAccountFactory(_smartAccountFactory)
           console.log("banan useSmartAccountFactory account set", { _smartAccountFactory })
         }
       }

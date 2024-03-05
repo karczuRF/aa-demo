@@ -3,7 +3,7 @@ import { useEffect, useState } from "react"
 import { useAccountSigner } from "../aa/useAccountSigner.tsx"
 import { MultiSigSmartAccountParams } from "./MultiOwnersSmartAccount.types.ts"
 import { usePublicEthersProvider } from "../aa/usePublicEthersProvider.tsx"
-import { MultiSigSmartAccount, MultiSigSmartAccount__factory } from "aams-test/dist/typechain/index"
+import { MultiSigSmartAccount, MultiSigSmartAccount__factory } from "aa-schnorr-multisig/dist/typechain/index"
 
 export function useMultiOwnerSmartAccount(multiOwnersSmartAccountParams: MultiSigSmartAccountParams) {
   const { chainId } = multiOwnersSmartAccountParams

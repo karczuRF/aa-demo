@@ -1,18 +1,17 @@
 import React, { useState } from "react"
 import { SmartAccountFactoryParams } from "./SmartAccountFactory.types"
 import { useAccountSigner } from "../aa/useAccountSigner"
-import { Key } from "aams-test/dist/types"
-import {
-  createSchnorrSigner,
-  generateCombinedPubAddress,
-  getAllCombinedPubAddressXofY,
-  pKeyString2Key,
-} from "aams-test/dist/utils/schnorr-helpers"
+
 import { useSmartAccountFactory } from "./useSmartAccountFactory"
 import { Hex, hexToBytes, stringToBytes } from "viem"
 import { useSchnorrSigners } from "../aa/useSchnorrSigners"
 import { usePublicEthersProvider } from "../aa/usePublicEthersProvider"
-import { SchnorrSigner, Schnorrkel } from "aams-test/dist/signers"
+import { SchnorrSigner } from "aa-schnorr-multisig-sdk/dist/signers"
+import { Key } from "aa-schnorr-multisig-sdk/dist/types"
+import { getAllCombinedPubAddressXofY } from "aa-schnorr-multisig-sdk/dist/helpers/schnorr-helpers"
+import { predictAccountAddress } from "aa-schnorr-multisig-sdk/dist/helpers/factory-helpers"
+import { useEthersSigner } from "../aa/useEthersSigner"
+import { Signer } from "ethers"
 
 export const CreateSmartAccount: React.FC<SmartAccountFactoryParams> = ({ chainId, factoryAddress }) => {
   const { isFactoryCreated, smartAccountFactory } = useSmartAccountFactory({ chainId, factoryAddress })
@@ -35,6 +34,14 @@ export const CreateSmartAccount: React.FC<SmartAccountFactoryParams> = ({ chainI
   // const accountSigner = useAccountSigner({ chainId })
   const signers = useSchnorrSigners({ chainId })
   const provider = usePublicEthersProvider({ chainId })
+  const ethsigner = useEthersSigner({ chainId: 80001 }) as unknown as Signer //TODO
+
+  const handlePredict = async () => {
+    const _address: Hex = (smartAccountFactory?.address ?? "0x") as Hex
+    const predicted = await predictAccountAddress(_address, ethsigner, allComboAddresses, salt)
+
+    console.log(`AA PREDICTED`, predicted)
+  }
 
   const handleGetSigners = async () => {
     setSchnorrSigner(signers)
@@ -42,7 +49,8 @@ export const CreateSmartAccount: React.FC<SmartAccountFactoryParams> = ({ chainI
   }
 
   const handleGetAllComboAddresses = async () => {
-    const _combos = getAllCombinedPubAddressXofY(schnorrSigner, 1)
+    const x = 1
+    const _combos = getAllCombinedPubAddressXofY(schnorrSigner, x)
     setAllComboAddresses(_combos)
     setCombinedPubKeys(_combos)
     console.log("AA COMBO ADDRESSES CREATED", _combos)
@@ -52,8 +60,8 @@ export const CreateSmartAccount: React.FC<SmartAccountFactoryParams> = ({ chainI
     console.log("SA CREATION", smartAccountFactory, owner, combinedPubKeys, salt, provider)
     if (smartAccountFactory && owner && allComboAddresses && salt && provider) {
       console.log("SA CREATION IN PROGRESS...", owner)
-      const _saltBytes = stringToBytes(salt, { size: 32 })
-      const _createTx = await smartAccountFactory.createAccount(owner, allComboAddresses, _saltBytes)
+      const saltBytes = stringToBytes(salt, { size: 32 })
+      const _createTx = await smartAccountFactory.createAccount(allComboAddresses, saltBytes)
       const _receipt = await _createTx.wait()
       if (_receipt) {
         console.log("SASMART ACCOUNT SUCCESS")
@@ -93,6 +101,7 @@ export const CreateSmartAccount: React.FC<SmartAccountFactoryParams> = ({ chainI
       <input type="text" value={combinedPubKeys} onChange={(e) => setCombinedPubKeys(Array(e.target.value))} />
       <input type="text" value={salt} onChange={(e) => setSalt(String(e.target.value))} />
       <button onClick={handleCreateSmartAccount}>Create new smart account</button>
+      <button onClick={handlePredict}>Predict</button>
       <h4>combinedSchnorrKey: {txHash}</h4>
     </div>
   )

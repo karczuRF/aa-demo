@@ -5,18 +5,19 @@ import { useERC20 } from "./useFakeUSD.tsx"
 import { useAccountSigner } from "./aa/useAccountSigner.tsx"
 import { useMultiOwnerSmartAccount } from "./MultiSigAccount/useMultiOwnerSmartAccount.tsx"
 import { UserOperationsERC20Params } from "./UserOperationsERC20.types.ts"
-import { Hex, encodeFunctionData, hexToBytes, parseUnits } from "viem"
+import { Hex, encodeFunctionData, hexToBytes, parseEther, parseUnits, toBytes } from "viem"
 import { SMART_ACCOUNT_ADDRESS } from "../utils/const.ts"
 
 import { UserOperationCallData } from "@alchemy/aa-core"
-import { SchnorrSigner } from "aams-test/dist/signers/SchnorrSigner"
-import { SchnorrMultiSigTx } from "aams-test/dist/transaction/SchnorrMultiSigTx"
-import { ERC20_abi } from "aams-test/dist/abi/index"
-import { createSchnorrSigner } from "aams-test/dist/utils/schnorr-helpers"
+import { SchnorrMultiSigTx } from "aa-schnorr-multisig-sdk/dist/transaction/SchnorrMultiSigTx"
+import { SchnorrSigner } from "aa-schnorr-multisig-sdk/dist/signers/index"
 import {
   MultiSigAccountSigner,
   createMultiSigAccountSigner,
-} from "aams-test/dist/accountAbstraction/MultiSigAccountSigner"
+} from "aa-schnorr-multisig-sdk/dist/accountAbstraction/index"
+import { ERC20_abi } from "../utils/abi/index.ts"
+import { createSchnorrSigner } from "aa-schnorr-multisig-sdk/dist/helpers/schnorr-helpers"
+import { MultiSigSmartAccount_abi } from "aa-schnorr-multisig/dist/abi/index"
 
 // TODO remove as this is for demo only
 const pk1 = import.meta.env.VITE_SIGNER_PRIVATE_KEY
@@ -57,10 +58,10 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
   const handleSingleSign = async () => {
     if (txInstances) {
       const _tx = txInstances[txId]
-      const signer = _tx.signers[idSigner]
-      console.log("[musigtx] handle single sign user ====>>>>", signer.getAddress())
+      const _signer = _tx.signers[idSigner]
+      console.log("[musigtx] handle single sign user ====>>>>", _signer.getAddress())
       console.log("[musigtx] handle single sign txInstances ====>>>>", { txInstances })
-      txInstances[txId].tx.signMultiSigHash(signer)
+      txInstances[txId].tx.signMultiSigHash(_signer)
       console.log("[musigtx] handle sign sig  done ====>>>>")
     }
   }
@@ -70,18 +71,32 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
     if (accountSigner && decimals) {
       const _signer = createMultiSigAccountSigner(accountSigner)
       setMusigSigner(_signer)
-      const _am = parseUnits(amount, decimals)
 
+      // const _am = parseUnits(amount, decimals)
+      // const uoCallData: UserOperationCallData = encodeFunctionData({
+      //   abi: ERC20_abi,
+      //   args: [toAddress, _am],
+      //   functionName: "transfer",
+      // })
+
+      const _am = parseEther(amount)
       const uoCallData: UserOperationCallData = encodeFunctionData({
-        abi: ERC20_abi,
+        abi: MultiSigSmartAccount_abi,
         args: [toAddress, _am],
-        functionName: "transfer",
+        functionName: "withdrawDepositTo",
       })
+
+      // to transfer eth use it for uoCallData
+      // {
+      //   data: "0x",
+      //   target: "0x694D8832D4cF9D27d6F2dC8A0912709E2808096C" as Hex,
+      //   value: _am,
+      // },
 
       const { opHash, request } = await _signer.buildUserOpWithGasEstimator(
         {
           data: uoCallData,
-          target: address as Hex,
+          target: SMART_ACCOUNT_ADDRESS as Hex,
         },
         {
           preVerificationGas: 2000000,

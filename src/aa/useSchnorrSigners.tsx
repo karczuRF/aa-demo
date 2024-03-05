@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react"
 import { ConnectionParams } from "./MultiSigSmartAccountParams.types.ts"
-import { createSchnorrSigner } from "aams-test/dist/utils/schnorr-helpers"
 import { hexToBytes } from "viem"
-import { SchnorrSigner } from "aams-test/dist/signers/SchnorrSigner"
+import { SchnorrSigner } from "aa-schnorr-multisig-sdk/dist/signers/SchnorrSigner"
+import { createSchnorrSigner } from "aa-schnorr-multisig-sdk/dist/helpers/schnorr-helpers"
 
 export function useSchnorrSigners({ chainId }: ConnectionParams) {
   const [schnorrSigners, setSchnorrSigners] = useState<SchnorrSigner[]>([])

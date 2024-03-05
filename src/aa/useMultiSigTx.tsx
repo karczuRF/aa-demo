@@ -1,6 +1,6 @@
-import { UserOperationRequest } from "aams-test/dist/accountAbstraction"
-import { SchnorrSigner } from "aams-test/dist/signers"
-import { SchnorrMultiSigTx } from "aams-test/dist/transaction"
+import { UserOperationRequest } from "aa-schnorr-multisig-sdk/dist/accountAbstraction"
+import { SchnorrSigner } from "aa-schnorr-multisig-sdk/dist/signers"
+import { SchnorrMultiSigTx } from "aa-schnorr-multisig-sdk/dist/transaction"
 import { useEffect, useState } from "react"
 import { Hex } from "viem"
 
