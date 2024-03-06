@@ -72,6 +72,7 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
       const _signer = createMultiSigAccountSigner(accountSigner)
       setMusigSigner(_signer)
 
+      // --- to transfer eth use it for uoCallData
       // const _am = parseUnits(amount, decimals)
       // const uoCallData: UserOperationCallData = encodeFunctionData({
       //   abi: ERC20_abi,
@@ -86,7 +87,7 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
         functionName: "withdrawDepositTo",
       })
 
-      // to transfer eth use it for uoCallData
+      // --- to transfer eth use it for uoCallData
       // {
       //   data: "0x",
       //   target: "0x694D8832D4cF9D27d6F2dC8A0912709E2808096C" as Hex,
