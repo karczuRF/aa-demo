@@ -6,9 +6,9 @@ import { CreateSmartAccount } from "./CreateSmartAccount.tsx"
 import { MUSIG_ACCOUNT_FACTORY_ADDRESS } from "../../utils/const.ts"
 
 export const SmartAccountFactory: React.FC<ConnectionParams> = ({ chainId }) => {
-  const [factoryAddress, setFactoryAddress] = useState<Hex | undefined>(MUSIG_ACCOUNT_FACTORY_ADDRESS)
+  const [factoryAddress, setFactoryAddress] = useState<String | undefined>(MUSIG_ACCOUNT_FACTORY_ADDRESS)
 
-  const handleChangeAccountAddress = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChangeAccountAddress = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value
 
     if (value.startsWith("0x") && value.length === 42) {
@@ -24,10 +24,15 @@ export const SmartAccountFactory: React.FC<ConnectionParams> = ({ chainId }) => 
     <div style={{ margin: "24px", padding: "12px" }}>
       <h2>
         Smart Account Factory:{" "}
-        <input type="text" style={{ width: "500px" }} value={factoryAddress} onChange={handleChangeAccountAddress} />
+        <input
+          type="text"
+          style={{ width: "500px" }}
+          value={factoryAddress as Hex}
+          onChange={handleChangeAccountAddress}
+        />
       </h2>
       <>
-        <CreateSmartAccount chainId={chainId} factoryAddress={factoryAddress} />
+        <CreateSmartAccount chainId={chainId} factoryAddress={factoryAddress as Hex} />
       </>
     </div>
   )

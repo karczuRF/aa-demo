@@ -5,7 +5,7 @@ import { useERC20 } from "./useFakeUSD.tsx"
 import { useAccountSigner } from "./aa/useAccountSigner.tsx"
 import { useMultiOwnerSmartAccount } from "./MultiSigAccount/useMultiOwnerSmartAccount.tsx"
 import { UserOperationsERC20Params } from "./UserOperationsERC20.types.ts"
-import { Hex, encodeFunctionData, hexToBytes, parseEther, parseUnits, toBytes } from "viem"
+import { Hex, encodeFunctionData, parseEther, parseUnits } from "viem"
 import { SMART_ACCOUNT_ADDRESS } from "../utils/const.ts"
 
 import { UserOperationCallData } from "@alchemy/aa-core"
@@ -15,9 +15,8 @@ import {
   MultiSigAccountSigner,
   createMultiSigAccountSigner,
 } from "aa-schnorr-multisig-sdk/dist/accountAbstraction/index"
-import { ERC20_abi } from "../utils/abi/index.ts"
 import { createSchnorrSigner } from "aa-schnorr-multisig-sdk/dist/helpers/schnorr-helpers"
-import { MultiSigSmartAccount_abi } from "aa-schnorr-multisig/dist/abi/index"
+import { ERC20_abi, MultiSigSmartAccount_abi } from "aa-schnorr-multisig/dist/abi/index"
 
 // TODO remove as this is for demo only
 const pk1 = import.meta.env.VITE_SIGNER_PRIVATE_KEY
@@ -55,36 +54,26 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
   console.log("===> [TransferUserOperation] smartAccount", smartAccount)
   console.log("===> [TransferUserOperation] nextNonce", nonce)
 
-  const handleSingleSign = async () => {
-    if (txInstances) {
-      const _tx = txInstances[txId]
-      const _signer = _tx.signers[idSigner]
-      console.log("[musigtx] handle single sign user ====>>>>", _signer.getAddress())
-      console.log("[musigtx] handle single sign txInstances ====>>>>", { txInstances })
-      txInstances[txId].tx.signMultiSigHash(_signer)
-      console.log("[musigtx] handle sign sig  done ====>>>>")
-    }
-  }
-
   const handleGenerateOpHash = async () => {
     console.log("===> [TransferUserOperation] accountSigner", accountSigner)
     if (accountSigner && decimals) {
       const _signer = createMultiSigAccountSigner(accountSigner)
       setMusigSigner(_signer)
 
-      // --- to transfer eth use it for uoCallData
-      // const _am = parseUnits(amount, decimals)
+      // --- to withdraw deposit use it for uoCallData
+      // const _am = parseEther(amount)
       // const uoCallData: UserOperationCallData = encodeFunctionData({
-      //   abi: ERC20_abi,
+      //   abi: MultiSigSmartAccount_abi,
       //   args: [toAddress, _am],
-      //   functionName: "transfer",
+      //   functionName: "withdrawDepositTo",
       // })
 
-      const _am = parseEther(amount)
+      // --- to transfer ERC20 use it for uoCallData
+      const _am = parseUnits(amount, decimals)
       const uoCallData: UserOperationCallData = encodeFunctionData({
-        abi: MultiSigSmartAccount_abi,
+        abi: ERC20_abi,
         args: [toAddress, _am],
-        functionName: "withdrawDepositTo",
+        functionName: "transfer",
       })
 
       // --- to transfer eth use it for uoCallData
@@ -107,8 +96,8 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
 
       console.log("===> [TransferUserOperation] OP HASH", opHash)
 
-      const signer1 = createSchnorrSigner(hexToBytes(pk1))
-      const signer2 = createSchnorrSigner(hexToBytes(pk2))
+      const signer1 = createSchnorrSigner(pk1)
+      const signer2 = createSchnorrSigner(pk2)
       const combo1 = [signer1, signer2]
       const ms1 = new SchnorrMultiSigTx(combo1, opHash, request)
 
@@ -117,8 +106,8 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
         signers: combo1,
       }
 
-      const signer3 = createSchnorrSigner(hexToBytes(pk1))
-      const signer4 = createSchnorrSigner(hexToBytes(pk2))
+      const signer3 = createSchnorrSigner(pk1)
+      const signer4 = createSchnorrSigner(pk2)
       const combo2 = [signer3, signer4]
       const ms2 = new SchnorrMultiSigTx(combo2, opHash, request)
 
@@ -127,9 +116,9 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
         signers: combo2,
       }
 
-      const signer5 = createSchnorrSigner(hexToBytes(pk2))
-      const signer6 = createSchnorrSigner(hexToBytes(pk3))
-      const signer7 = createSchnorrSigner(hexToBytes(pk1))
+      const signer5 = createSchnorrSigner(pk2)
+      const signer6 = createSchnorrSigner(pk3)
+      const signer7 = createSchnorrSigner(pk1)
       const combo3 = [signer5, signer6, signer7]
       const ms3 = new SchnorrMultiSigTx(combo3, opHash, request)
 
@@ -139,6 +128,17 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
       }
 
       setTxInstances([tx1, tx2, tx3])
+    }
+  }
+
+  const handleSingleSign = async () => {
+    if (txInstances) {
+      const _tx = txInstances[txId]
+      const _signer = _tx.signers[idSigner]
+      console.log("[musigtx] handle single sign user ====>>>>", _signer.getAddress())
+      console.log("[musigtx] handle single sign txInstances ====>>>>", { txInstances })
+      txInstances[txId].tx.signMultiSigHash(_signer)
+      console.log("[musigtx] handle sign sig  done ====>>>>")
     }
   }
 
@@ -157,17 +157,30 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
   return (
     <div style={{ display: "flex", flexDirection: "column", margin: "24px 0 24px 0" }}>
       <h2>
-        Tx ID: <input style={{ width: "500px" }} value={txId} onChange={(e) => setTxId(Number(e.target.value))} />{" "}
+        Tx index: <input style={{ width: "500px" }} value={txId} onChange={(e) => setTxId(Number(e.target.value))} />{" "}
       </h2>
       <h2>
-        signer:{" "}
+        signer index:{" "}
         <input style={{ width: "500px" }} value={idSigner} onChange={(e) => setIdSigner(Number(e.target.value))} />{" "}
       </h2>
       <button onClick={handleSingleSign}>SIGN</button>
       <b>user operation: transfer to {toAddress}</b>
+      <h2></h2>
       <input value={amount} onChange={(e) => setAmount(String(e.target.value))} />
       <button onClick={handleGenerateOpHash}>INITIALIZE USER OP & GENERATE HASH</button>
       <b>operation hash {operationHash}</b>
+      <h3>Created Transaction Instances IDs:</h3>
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        {txInstances.map((tx, index) => {
+          return txInstances.length > 0 ? (
+            <text>
+              Tx Index: {index} (signers needed {tx.signers.length})
+            </text>
+          ) : (
+            <text>NO SIGNERS</text>
+          )
+        })}
+      </div>
       <button onClick={handleTransfer}>SEND USER OP</button>
       <b>user operation: transfer hash {txHash}</b>
     </div>
