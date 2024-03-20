@@ -25,7 +25,7 @@ export const BalanceNativeSmartWallet: React.FC<MultiSigSmartAccountParams> = (a
 
   return (
     <div style={{ display: "flex", flexDirection: "column", margin: "24px 0 24px 0" }}>
-      <b>Native Balance of SmartWallet {address}</b>
+      <b>Balance of Account: {address}</b>
       <span>{utils.formatUnits(balance, 18)}</span>
     </div>
   )
