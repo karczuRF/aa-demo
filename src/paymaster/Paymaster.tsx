@@ -1,16 +1,16 @@
 import React, { useCallback, useEffect, useState } from "react"
 
-import { usePaymaster } from "./paymaster/usePaymaster.tsx"
-import { useEthersSigner } from "./aa/useEthersSigner.tsx"
-import { ConnectionParams } from "./MultiSigAccount/MultiOwnersSmartAccount.types.ts"
+import { usePaymaster } from "./usePaymaster.tsx"
+import { useEthersSigner } from "../aa/useEthersSigner.tsx"
+import { ConnectionParams } from "../MultiSigAccount/MultiOwnersSmartAccount.types.ts"
 import { utils } from "ethers"
-import { useEntrypoint } from "./entrypoint/useEntrypoint.tsx"
+import { useEntrypoint } from "../entrypoint/useEntrypoint.tsx"
 import { UserOperationEventEvent } from "aa-schnorr-multisig/dist/typechain/contracts/erc4337/core/EntryPoint"
+import { ENTRYPOINT_ADDRESS } from "../../utils/const.ts"
 
 export const Paymaster: React.FC<ConnectionParams> = (connectionParams) => {
-  const paymasterAddress = "0x3082a7b8C4Da84C01919b0ff2ab4593ADbd6d196"
-  const entrypointAddress = "0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789"
-  // const whitelistedAddress = "0xe8BEa03E9Eb59DD3593ef13AC96Be552D7Fa9465"
+  const paymasterAddress = "0x"
+  const entrypointAddress = ENTRYPOINT_ADDRESS
 
   const [paymasterDeposit, setPaymasterDeposit] = useState<string>("0")
   const [isOwner, setIsOwner] = useState<boolean>(false)
@@ -22,9 +22,6 @@ export const Paymaster: React.FC<ConnectionParams> = (connectionParams) => {
   const [senderAddress2, setSenderAddress2] = useState<string>("")
 
   const signer = useEthersSigner(connectionParams)
-
-  // console.log("signer", signerAddress, { signer })
-  // console.log("info", isOwner, senderAddress)
 
   const { paymaster } = usePaymaster({ paymasterAddress, ...connectionParams })
   const { entrypoint } = useEntrypoint({ entrypointAddress, ...connectionParams })
@@ -75,8 +72,9 @@ export const Paymaster: React.FC<ConnectionParams> = (connectionParams) => {
 
   return (
     <div style={{ margin: "48px", padding: "12px", border: "1px solid black" }}>
-      <h3 style={{ color: "blue" }}>Paymaster {paymasterAddress}</h3>
-      <h4 style={{ color: "blue" }}>Signer {signerAddress}</h4>
+      <h2 style={{ color: "red" }}>Notice! Paymaster not currently supported! </h2>
+      <h3 style={{ color: "yellow" }}>Paymaster {paymasterAddress}</h3>
+      <h4 style={{ color: "yellow" }}>Signer {signerAddress}</h4>
       <h4 style={{ color: isOwner ? "green" : "red" }}>Is owner? {isOwner ? "yes" : "no"}</h4>
       <h2>Balance: {paymasterDeposit}</h2>
 

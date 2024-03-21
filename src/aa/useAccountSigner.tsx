@@ -1,26 +1,24 @@
-import { getChain, getDefaultEntryPointAddress } from "@alchemy/aa-core"
+import { getChain } from "@alchemy/aa-core"
 import { AccountSigner, EthersProviderAdapter } from "@alchemy/aa-ethers"
-import { useAccountOwner } from "./useAccountOwner.tsx"
 import { Chain, Hex } from "viem"
 import { useEffect, useState } from "react"
 import { MUSIG_ACCOUNT_FACTORY_ADDRESS } from "../../utils/const.ts"
 import { useAlchemyProvider } from "./useAlchemyProvider.ts"
-import { utils } from "ethers"
 import { useSchnorrSigners } from "./useSchnorrSigners.tsx"
 import { MultiSigAccountAbstraction } from "aa-schnorr-multisig-sdk/dist/accountAbstraction/MultiSigAccountAbstraction"
+import { getAllCombinedAddrFromSigners } from "aa-schnorr-multisig-sdk/dist/helpers/schnorr-helpers"
 
 export function useAccountSigner({
   chainId,
-  externalAccountAddress,
-  accountIndex,
+  smartAccountAddress,
+  salt,
 }: {
   chainId: Chain["id"]
-  externalAccountAddress?: Hex
-  accountIndex?: number
+  smartAccountAddress?: Hex
+  salt?: string
 }) {
   const [accountSigner, setAccountSigner] = useState<AccountSigner<MultiSigAccountAbstraction> | undefined>()
-  const _signer = useSchnorrSigners({ chainId })[accountIndex ?? 0]
-  const _ownerSchnorrAccount = useAccountOwner({ signer: _signer })
+  const _signers = useSchnorrSigners({ chainId })
   const chain = getChain(chainId)
 
   /* Note: publicProvider can be also created from Ethers Provider */
@@ -29,24 +27,18 @@ export function useAccountSigner({
 
   useEffect(() => {
     async function getAccountSigner() {
-      if (alchemyProvider && _ownerSchnorrAccount && externalAccountAddress) {
-        // console.log("===> [useAccountSigner] schnorr", { _ownerSchnorrAccount }, _ownerSchnorrAccount?.getAddress())
+      if (alchemyProvider && smartAccountAddress) {
         const accountProvider = EthersProviderAdapter.fromEthersProvider(alchemyProvider)
-        const combinedPubAddress: string[] = [
-          "0x372A291A9cad69b0F5F231cf1885574e9De7fD33",
-          "0x55a0a5Deb3AB0Eb280d34670EB27C5bbd54931FD",
-          "0x5a50893a11d37bc12f0af0514883ff85dd224e20",
-          "0xccec0a637cff7b18f7b53ca4b5fd7a13ebc438c7",
-          "0x8507cccd2eb83b90b8ef92e7bdde6556b0508d7e",
-        ]
+
+        const combinedAddresses = getAllCombinedAddrFromSigners(_signers, 1)
         const accountSigner = accountProvider.connectToAccount((rpcClient) => {
           const smartAccount = new MultiSigAccountAbstraction({
             chain,
-            accountAddress: externalAccountAddress,
+            accountAddress: smartAccountAddress,
             factoryAddress: MUSIG_ACCOUNT_FACTORY_ADDRESS,
             rpcClient,
-            combinedPubKeys: combinedPubAddress,
-            salt: utils.formatBytes32String("salt"),
+            combinedAddress: combinedAddresses,
+            salt,
           })
 
           smartAccount.getDeploymentState().then((result: unknown) => {
@@ -63,7 +55,7 @@ export function useAccountSigner({
       }
     }
     getAccountSigner()
-  }, [alchemyProvider, _ownerSchnorrAccount, chainId, externalAccountAddress])
+  }, [alchemyProvider, chainId, smartAccountAddress])
 
   console.log("===> [useAccountSigner] accountSigner", accountSigner)
   return accountSigner

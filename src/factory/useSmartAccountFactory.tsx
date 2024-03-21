@@ -19,7 +19,6 @@ export function useSmartAccountFactory(smartAccountFactoryParams: SmartAccountFa
   useEffect(() => {
     async function connectSmartAccountFactory() {
       if (signer) {
-        console.log("banan useSmartAccountFactory isFactoryCreated", isFactoryCreated)
         if (!isFactoryCreated) {
           const _smartAccountFactory = MultiSigSmartAccountFactory__factory.connect(
             MUSIG_ACCOUNT_FACTORY_ADDRESS,
@@ -28,7 +27,6 @@ export function useSmartAccountFactory(smartAccountFactoryParams: SmartAccountFa
 
           setIsFactoryCreated(true)
           if (_smartAccountFactory) setSmartAccountFactory(_smartAccountFactory)
-          console.log("banan useSmartAccountFactory account set", { _smartAccountFactory })
         }
       }
     }

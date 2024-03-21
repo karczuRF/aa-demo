@@ -6,7 +6,7 @@ import { MultiSigSmartAccountParams } from "../MultiOwnersSmartAccount.types.ts"
 import { useEOA } from "../../eoa/useEOA.tsx"
 
 export const useMultiOwnerAccountOwnership = (multiOwnersSmartAccountParams: MultiSigSmartAccountParams) => {
-  const { externalAccountAddress, chainId } = multiOwnersSmartAccountParams
+  const { smartAccountAddress, chainId } = multiOwnersSmartAccountParams
   const [isOwner, setIsOwner] = useState<boolean>(false)
   const [isSigner, setIsSigner] = useState<boolean>(false)
   const [accountSignerAddress, setAccountSignerAddress] = useState<string>("")
@@ -17,33 +17,20 @@ export const useMultiOwnerAccountOwnership = (multiOwnersSmartAccountParams: Mul
 
   const { multiOwnerSmartAccount } = useMultiOwnerSmartAccount(multiOwnersSmartAccountParams)
 
-  console.log("[useMultiOwnerAccountOwnership] multiOwnerSmartAccount params", { multiOwnersSmartAccountParams })
-  console.log("[useMultiOwnerAccountOwnership] multiOwnerSmartAccount", multiOwnerSmartAccount)
-  console.log("[useMultiOwnerAccountOwnership] accountSigner", accountSigner)
-  console.log("[useMultiOwnerAccountOwnership] eoaAddress", eoaAddress)
-
   useEffect(() => {
     async function checkOwnerSigner() {
       if (multiOwnerSmartAccount && accountSigner) {
-        console.log("[useMultiOwnerAccountOwnership] accountSigner", accountSigner)
         const _signerAddress = await accountSigner.getAddress()
         setAccountSignerAddress(_signerAddress)
 
-        console.log("[useMultiOwnerAccountOwnership] accountAddress", _signerAddress)
         const ownerRole = await multiOwnerSmartAccount.OWNER_ROLE()
         const isAccountOwner = await multiOwnerSmartAccount.hasRole(ownerRole, eoaAddress)
-        console.log("[useMultiOwnerAccountOwnership] accountAddress", _signerAddress)
         setIsOwner(isAccountOwner)
-
-        const signerRole = await multiOwnerSmartAccount.SIGNER_ROLE()
-        const isAccountSigner = await multiOwnerSmartAccount.hasRole(signerRole, eoaAddress)
-        console.log("[useMultiOwnerAccountOwnership] accountAddress", _signerAddress)
-        setIsSigner(isAccountSigner)
       }
     }
 
     checkOwnerSigner()
-  }, [accountSigner, multiOwnerSmartAccount, externalAccountAddress, chainId, setIsOwner, setIsSigner])
+  }, [accountSigner, multiOwnerSmartAccount, smartAccountAddress, chainId, setIsOwner, setIsSigner])
 
   return { isOwner, isSigner, accountSignerAddress, eoaAddress }
 }

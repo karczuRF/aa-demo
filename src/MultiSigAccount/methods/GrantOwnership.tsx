@@ -2,19 +2,18 @@ import React, { useState } from "react"
 import { type TransactionRequest } from "@ethersproject/providers"
 
 import { useAccountSigner } from "../../aa/useAccountSigner.tsx"
-import { Hex } from "../../account-abstraction/UserOperation.ts"
 import { useMultiOwnerSmartAccount } from "../useMultiOwnerSmartAccount.tsx"
 import { MultiSigSmartAccountParams } from "../MultiOwnersSmartAccount.types.ts"
+import { Hex } from "viem"
+import { SMART_ACCOUNT_ADDRESS } from "../../../utils/const.ts"
 
-export const GrantOwnership: React.FC<MultiSigSmartAccountParams> = ({ chainId, address }) => {
+export const GrantOwnership: React.FC<MultiSigSmartAccountParams> = ({ chainId }) => {
   const [newOwner, setNewOwner] = useState<string>("")
-  const accountSigner = useAccountSigner({ chainId })
-  const { multiOwnerSmartAccount } = useMultiOwnerSmartAccount({ chainId, address })
+  const accountSigner = useAccountSigner({ chainId, smartAccountAddress: SMART_ACCOUNT_ADDRESS })
+  const { multiOwnerSmartAccount } = useMultiOwnerSmartAccount({ chainId })
 
   const handleGrantOwnership = async () => {
-    console.log("banan", multiOwnerSmartAccount, address, newOwner, accountSigner)
     if (multiOwnerSmartAccount && newOwner && accountSigner) {
-      console.log("banan xD")
       const address = await accountSigner.getAddress()
       const ownerRole = await multiOwnerSmartAccount.OWNER_ROLE()
 

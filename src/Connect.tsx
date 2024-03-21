@@ -1,6 +1,7 @@
 import React from "react"
 import { useAccount, useConnect, useDisconnect } from "wagmi"
 import { polygonMumbai } from "wagmi/chains"
+
 export const Connect: React.FC = () => {
   const { address, isConnected } = useAccount()
   const { connect, connectors } = useConnect()

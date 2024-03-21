@@ -1,7 +1,7 @@
-import { useEthersSigner } from "./aa/useEthersSigner.tsx"
+import { useEthersSigner } from "../aa/useEthersSigner.tsx"
 import { useEffect, useState } from "react"
 import { ethers } from "ethers"
-import { ERC20_abi } from "../utils/abi/index.ts"
+import { ERC20_abi } from "../../utils/abi/index.ts"
 
 export function useERC20({ address, chainId }: { address: string; chainId?: number }) {
   const [erc20, setERC20] = useState<any>()

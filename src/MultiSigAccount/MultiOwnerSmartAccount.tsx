@@ -2,8 +2,8 @@ import { MultiSigSmartAccountParams } from "./MultiOwnersSmartAccount.types.ts"
 import { useMultiOwnerAccountOwnership } from "./methods/useMultiOwnerAccountOwnership.tsx"
 
 import React from "react"
-import { NativeSmartWallet } from "../NativeSmartWallet.tsx"
-import { UserOperationsERC20 } from "../UserOperationsERC20.tsx"
+import { NativeSmartWallet } from "../nativeToken/NativeSmartWallet.tsx"
+import { UserOperationsERC20 } from "../userOperation/UserOperationsERC20.tsx"
 
 export const MultiOwnerSmartAccount: React.FC<MultiSigSmartAccountParams> = (multiOwnersSmartAccountParams) => {
   const { isOwner, isSigner, eoaAddress, accountSignerAddress } =

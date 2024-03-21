@@ -1,15 +1,14 @@
 import React, { useState } from "react"
 
-import { useERC20 } from "./useFakeUSD.tsx"
+import { useERC20 } from "../erc20/useFakeUSD.tsx"
 
-import { useAccountSigner } from "./aa/useAccountSigner.tsx"
-import { useMultiOwnerSmartAccount } from "./MultiSigAccount/useMultiOwnerSmartAccount.tsx"
+import { useAccountSigner } from "../aa/useAccountSigner.tsx"
+import { useMultiOwnerSmartAccount } from "../MultiSigAccount/useMultiOwnerSmartAccount.tsx"
 import { UserOperationsERC20Params } from "./UserOperationsERC20.types.ts"
 import { Hex, encodeFunctionData, parseEther, parseUnits } from "viem"
-import { FAKE_ERC20_USDC_ADDRESS, SMART_ACCOUNT_ADDRESS } from "../utils/const.ts"
+import { FAKE_ERC20_USDC_ADDRESS, SMART_ACCOUNT_ADDRESS } from "../../utils/const.ts"
 
 import { UserOperationCallData } from "@alchemy/aa-core"
-import { SchnorrMultiSigTx } from "aa-schnorr-multisig-sdk/dist/transaction/SchnorrMultiSigTx"
 import { SchnorrSigner } from "aa-schnorr-multisig-sdk/dist/signers/index"
 import {
   MultiSigAccountSigner,
@@ -17,6 +16,10 @@ import {
 } from "aa-schnorr-multisig-sdk/dist/accountAbstraction/index"
 import { createSchnorrSigner } from "aa-schnorr-multisig-sdk/dist/helpers/schnorr-helpers"
 import { ERC20_abi } from "aa-schnorr-multisig/dist/abi/index"
+import { PublicNonces } from "aa-schnorr-multisig-sdk/dist/types/nonce"
+import { Key } from "aa-schnorr-multisig-sdk/dist/types/key"
+import { MultiSigUserOpWithSigners } from "aa-schnorr-multisig-sdk/dist/transaction/MultiSigUserOpWithSigners"
+import { MultiSigUserOp } from "aa-schnorr-multisig-sdk/dist/transaction/MultiSigUserOp"
 
 // TODO remove as this is for demo only
 const pk1 = import.meta.env.VITE_SIGNER_PRIVATE_KEY
@@ -24,8 +27,15 @@ const pk2 = import.meta.env.VITE_SIGNER2_PK
 const pk3 = import.meta.env.VITE_SIGNER3_PK
 
 export interface Tx {
-  tx: SchnorrMultiSigTx
+  tx: MultiSigUserOpWithSigners
   signers: SchnorrSigner[]
+}
+
+export interface MsUserOp {
+  userOp: MultiSigUserOp
+  publicKeys: Key[]
+  publicNonces: PublicNonces[]
+  submittedSigs: number
 }
 
 export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
@@ -41,11 +51,14 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
   const [operationHash, setOperationHash] = useState<Hex>("0x")
   const [txInstances, setTxInstances] = useState<Tx[]>([])
 
+  // example usage of using MultiSigUserOpWithSigners
+  // const [userOpInstance, setUserOpInstance] = useState<MsUserOp>()
+
   const { decimals } = useERC20({ address, chainId: accountParams.chainId })
 
   const accountSigner = useAccountSigner({
     chainId: accountParams.chainId,
-    externalAccountAddress: SMART_ACCOUNT_ADDRESS as Hex,
+    smartAccountAddress: SMART_ACCOUNT_ADDRESS as Hex,
   })
   const { multiOwnerSmartAccount: smartAccount, nonce } = useMultiOwnerSmartAccount({
     chainId: accountParams.chainId,
@@ -114,22 +127,45 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
 
       console.log("===> [TransferUserOperation] OP HASH", opHash)
 
-      // for each transaction new Schnorr Signer needs to be created, because
-      // each Signer has only one-time used nonce for signle tx
+      /**
+       * note!
+       * for each transaction new Schnorr Signer needs to be created, because
+       * each Signer has only 'one-time used' nonce for signle tx
+       * other words - single instance of Schnorr Signer handles single nonces
+       */
+
       const signer1 = createSchnorrSigner(pk1)
       const signer2 = createSchnorrSigner(pk2)
       const combo1 = [signer1, signer2]
-      const ms1 = new SchnorrMultiSigTx(combo1, opHash, request)
+      const ms1 = new MultiSigUserOpWithSigners(combo1, opHash, request)
 
       const tx0: Tx = {
         tx: ms1,
         signers: combo1,
       }
 
+      /**
+       * example usage of using MultiSigUserOpWithSigners
+       * const _pk = combo1.map((signer) => {
+       *   return signer.getPubKey()
+       * })
+       * const _pn = combo1.map((signer) => {
+       *   return signer.generatePubNonces()
+       * })
+       * const msUserOp: MsUserOp = {
+       *   userOp: new MultiSigUserOp(_pk, _pn, opHash, request),
+       *   publicKeys: _pk,
+       *   publicNonces: _pn,
+       *   submittedSigs: 0,
+       * }
+       * setUserOpInstance(msUserOp)
+       *
+       */
+
       const signer3 = createSchnorrSigner(pk1)
       const signer4 = createSchnorrSigner(pk2)
       const combo2 = [signer3, signer4]
-      const ms2 = new SchnorrMultiSigTx(combo2, opHash, request)
+      const ms2 = new MultiSigUserOpWithSigners(combo2, opHash, request)
 
       const tx1: Tx = {
         tx: ms2,
@@ -140,7 +176,7 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
       const signer6 = createSchnorrSigner(pk3)
       const signer7 = createSchnorrSigner(pk1)
       const combo3 = [signer5, signer6, signer7]
-      const ms3 = new SchnorrMultiSigTx(combo3, opHash, request)
+      const ms3 = new MultiSigUserOpWithSigners(combo3, opHash, request)
 
       const tx2: Tx = {
         tx: ms3,
@@ -155,10 +191,19 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
     if (txInstances) {
       const _tx = txInstances[txId]
       const _signer = _tx.signers[idSigner]
-      console.log("[musigtx] handle single sign user ====>>>>", _signer.getAddress())
-      console.log("[musigtx] handle single sign txInstances ====>>>>", { txInstances })
+      console.log(" ===>[musigtx] handle single sign user", _signer.getAddress())
+      console.log(" ===>[musigtx] handle single sign txInstances", { txInstances })
       txInstances[txId].tx.signMultiSigHash(_signer)
-      console.log("[musigtx] handle sign sig  done ====>>>>")
+
+      /**
+       * example usage of using MultiSigUserOpWithSigners
+       *
+       * userOpInstance?.userOp.signMultiSigHash(_signer)
+       * const sig = userOpInstance?.userOp._getSignatures()
+       * console.log(" ===>[musigtx] handle sign sig done! Sig:", sig)
+       * const submitted = userOpInstance?.userOp._getSignatures().length ?? 0
+       * console.log(" ===>[musigtx] submitted Sigs for this UserOp:", submitted)
+       */
     }
   }
 
@@ -166,8 +211,11 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
     console.log("===> [TransferUserOperation] accountSigner:", accountSigner)
     if (musigSigner && txInstances) {
       const _multiSigTx = txInstances[txId].tx
-      console.log("===> [TransferUserOperation] userOperation in progress...")
       const _tx = await musigSigner.sendMultiSigTransaction(_multiSigTx)
+      console.log("===> [TransferUserOperation] userOperation in progress...")
+
+      //example usage of using MultiSigUserOpWithSigners
+      // const _tx = await musigSigner.sendMultiSigUserOp(userOpInstance?.userOp)
 
       console.log("===> [TransferUserOperation] userOperationTransaction", _tx)
       setTxHash(_tx)
@@ -178,15 +226,6 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
   return (
     <div style={{ display: "flex", flexDirection: "column", margin: "24px 0 24px 0" }}>
       <h3 style={{ color: "yellow" }}>Schnorr MultiSig Transaction</h3>
-      <h2>
-        Tx index: <input style={{ width: "500px" }} value={txId} onChange={(e) => setTxId(Number(e.target.value))} />{" "}
-      </h2>
-      <h2>
-        Signer index (0/1/2):{" "}
-        <input style={{ width: "500px" }} value={idSigner} onChange={(e) => setIdSigner(Number(e.target.value))} />{" "}
-      </h2>
-      <button onClick={handleSingleSign}>SIGN with Signer nr {idSigner}</button>
-      <h2></h2>
       <b>UserOperation transfer to address: {toAddress}</b>
       <b>Enter decimal amount (value will be converted to ETH/ERC20 decimals accordingly):</b>
       <input value={amount} onChange={(e) => setAmount(String(e.target.value))} />
@@ -204,6 +243,15 @@ export const TransferUserOperation: React.FC<UserOperationsERC20Params> = ({
           )
         })}
       </div>
+      <h3>
+        Tx index: <input style={{ width: "500px" }} value={txId} onChange={(e) => setTxId(Number(e.target.value))} />{" "}
+      </h3>
+      <h3>
+        Signer index (0/1/2):{" "}
+        <input style={{ width: "500px" }} value={idSigner} onChange={(e) => setIdSigner(Number(e.target.value))} />{" "}
+      </h3>
+      <button onClick={handleSingleSign}>SIGN with Signer nr {idSigner}</button>
+      <h2></h2>
       <button onClick={handleTransfer}>SEND USER OP</button>
       <b>userOperation tx hash: {txHash}</b>
     </div>

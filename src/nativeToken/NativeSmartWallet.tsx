@@ -1,5 +1,5 @@
 import { BalanceNativeSmartWallet } from "./BalanceNativeSmartWallet.tsx"
-import { MultiSigSmartAccountParams } from "./aa/MultiSigSmartAccountParams.types.ts"
+import { MultiSigSmartAccountParams } from "../aa/MultiSigSmartAccountParams.types.ts"
 
 export const NativeSmartWallet: React.FC<MultiSigSmartAccountParams> = (accountParams) => {
   return (

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 
 import { useERC20 } from "./useFakeUSD.tsx"
-import { useEOA } from "./eoa/useEOA.tsx"
+import { useEOA } from "../eoa/useEOA.tsx"
 import { ERC20Params } from "./ERC20.types.tsx"
 import { utils } from "ethers"
 

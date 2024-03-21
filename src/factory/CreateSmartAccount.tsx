@@ -18,12 +18,15 @@ import {
 import { useEthersSigner } from "../aa/useEthersSigner"
 import { Signer } from "ethers"
 import { ENTRYPOINT_ADDRESS } from "../../utils/const"
+import { getAllCombinedAddrFromKeys } from "aa-schnorr-multisig-sdk/dist/helpers/schnorr-helpers"
 
 export const CreateSmartAccount: React.FC<SmartAccountFactoryParams> = ({ chainId, factoryAddress }) => {
   const { isFactoryCreated, smartAccountFactory } = useSmartAccountFactory({ chainId, factoryAddress })
 
   const [schnorrSigner, setSchnorrSigner] = useState<SchnorrSigner[]>([])
   const [combinedAddress, setCombinedAddress] = useState<string[]>([])
+  const [predictedImplAddress, setPredictedImplAddress] = useState<string>()
+  const [predictedFactoryAddress, setPredictedFactoryAddress] = useState<string>()
   const [predictedAddress, setPredictedAddress] = useState<string>()
 
   // example of combined Schnorr Signers addresses
@@ -43,15 +46,11 @@ export const CreateSmartAccount: React.FC<SmartAccountFactoryParams> = ({ chainI
   // const accountSigner = useAccountSigner({ chainId })
   const signers = useSchnorrSigners({ chainId })
   const provider = usePublicEthersProvider({ chainId })
-  const ethsigner = useEthersSigner({ chainId: 80001 }) as unknown as Signer //TODO
+  const ethsigner = useEthersSigner({ chainId: 80001 }) as unknown as Signer
 
   const handlePredict = async () => {
-    const _factoryAddress: Hex = (smartAccountFactory?.address ?? "0x") as Hex
-    const implementationAddr = await getAccountImplementationAddress(_factoryAddress, ethsigner)
-    const saltHash = saltToHex(salt)
-
     // predict Factory address using salt
-    const saltFactory = saltToHex("aafactorysalttest")
+    const saltFactory = saltToHex("aafactorysalttest") // used the same for Factory contract deploy
     const predictedFactory = predictFactoryAddrOffchain(saltFactory, ENTRYPOINT_ADDRESS)
     console.log(`AA PREDICTED FACTORY OFFCHAIN :`, predictedFactory)
     // predict Implementation Address
@@ -62,6 +61,9 @@ export const CreateSmartAccount: React.FC<SmartAccountFactoryParams> = ({ chainI
     )
     console.log(`AA PREDICTED AA IMPLEMETATION OFFCHAIN :`, predictedImplementation)
 
+    const _factoryAddress: Hex = (smartAccountFactory?.address ?? "0x") as Hex
+    const implementationAddr = await getAccountImplementationAddress(_factoryAddress, ethsigner)
+    const saltHash = saltToHex(salt)
     // predict address onchain
     const predictedOnchain = await predictAccountAddrOnchain(_factoryAddress, combinedAddress, saltHash, ethsigner)
     // predict address offchain
@@ -69,7 +71,8 @@ export const CreateSmartAccount: React.FC<SmartAccountFactoryParams> = ({ chainI
 
     console.log(`AA PREDICTED ADDRESS ONCHAIN :`, predictedOnchain)
     console.log(`AA PREDICTED ADDRESS OFFCHAIN:`, predictedOffchain)
-    console.log(`AA predicted equals?:`, predictedOffchain === predictedOnchain)
+    setPredictedFactoryAddress(predictedFactory)
+    setPredictedImplAddress(predictedImplementation)
     setPredictedAddress(predictedOffchain)
   }
 
@@ -80,8 +83,14 @@ export const CreateSmartAccount: React.FC<SmartAccountFactoryParams> = ({ chainI
 
   const handleGetAllComboAddresses = async () => {
     const _combos = getAllCombinedAddrFromSigners(schnorrSigner, x)
+    const _pk = schnorrSigner.map((signer) => {
+      return signer.getPubKey()
+    })
+    const _combosFromPk = getAllCombinedAddrFromKeys(_pk)
+
     setCombinedAddress(_combos)
-    console.log("AA COMBO ADDRESSES CREATED", _combos)
+    console.log("AA COMBO ADDRESSES CREATED FROM SIGNERS", _combos)
+    console.log("AA COMBO ADDRESSES CREATED FROM PUB KEY", _combosFromPk)
   }
 
   const handleCreateSmartAccount = async () => {
@@ -136,7 +145,9 @@ export const CreateSmartAccount: React.FC<SmartAccountFactoryParams> = ({ chainI
         }}
       />
       <button onClick={handlePredict}>Predict Account Address</button>
-      <h4>Predicted Account Address: {predictedAddress}</h4>
+      <b>Predicted Factory Address: {predictedFactoryAddress}</b>
+      <b>Predicted AA Impl Address: {predictedImplAddress}</b>
+      <b>Predicted Account Address: {predictedAddress}</b>
       <button onClick={handleCreateSmartAccount}>Create new MultiSig Smart Account</button>
       <h4>Create Account Tx Hash: {txHash}</h4>
     </div>

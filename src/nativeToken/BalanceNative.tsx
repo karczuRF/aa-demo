@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 
 import { polygonMumbai } from "wagmi/chains"
-import { useEthersSigner } from "./aa/useEthersSigner.tsx"
+import { useEthersSigner } from "../aa/useEthersSigner.tsx"
 import { utils } from "ethers"
 
 export const BalanceNative: React.FC = () => {
